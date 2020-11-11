@@ -1,0 +1,31 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Build directory
+[Bb]uild
+
+# Ignore Visual Studio Code Configurations
+.vscode
+
+# Ignore macOS 'Desktop Services Store' fles
+.DS_Store
