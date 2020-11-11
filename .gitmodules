@@ -1,0 +1,3 @@
+[submodule "astu"]
+	path = astu
+	url = https://github.com/divotkey/astu.git
