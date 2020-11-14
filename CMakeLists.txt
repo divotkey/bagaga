@@ -12,7 +12,7 @@ project(AST)
 add_subdirectory(${PROJECT_SOURCE_DIR}/astu astu)
 
 # Collection of Sub-projects
-add_subdirectory(${PROJECT_SOURCE_DIR}/Client client)
+add_subdirectory(${PROJECT_SOURCE_DIR}/client client)
 #add_subdirectory(${PROJECT_SOURCE_DIR}/HelloWorld hello_world)
 #add_subdirectory(${PROJECT_SOURCE_DIR}/HelloAstu hello_astu)
 
