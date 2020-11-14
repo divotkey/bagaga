@@ -6,6 +6,7 @@
 #include <SdlService.h>
 #include <SdlEventService.h>
 #include <SdlVideoService.h>
+#include <SdlRenderService.h>
 #include "PhysicsService.h"
 
 using namespace std;
@@ -19,6 +20,7 @@ int main()
   sm.AddService(std::make_shared<SdlService>(true));
   sm.AddService(std::make_shared<SdlVideoService>());
   sm.AddService(std::make_shared<SdlEventService>());
+  sm.AddService(std::make_shared<SdlRenderService>());
   sm.AddService(std::make_shared<PhysicsService>());
 
   // configure application
