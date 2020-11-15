@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Add executable Target
 # (Target name followed by blank-separated C++ source files, no header files!)
-add_executable(Game main.cpp PhysicsService.cpp)
+add_executable(Game main.cpp LineRendererTestService.cpp SdlLineRenderer.cpp)
 
 # Specify required libraries
 target_link_libraries(Game astu)
