@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <Vector2.h>
+#include "ITimeService.h"
 #include "ILineRenderer.h"
 #include "UpdateService.h"
 
@@ -29,9 +31,37 @@ private:
     /** Used for fast access to line render service. */
     std::shared_ptr<ILineRenderer> lineRenderer;
 
+    /** Used for fast access to time service. */
+    std::shared_ptr<astu::ITimeService> timeService;
+
     /** The width of the output window. */
     int width;
 
     /** The height of the output window. */
     int height;
+
+    class MovingLine {
+    public:
+        /** Constructor. */
+        MovingLine(double width, double height);
+
+        /** The first point of the moving line. */
+        astu::Vector2 p1;
+
+        /** The second point of the moving line. */
+        astu::Vector2 p2;
+
+        /** The velocity of the first end point. */
+        astu::Vector2 v1;
+
+        /** The velocity of the second end point. */
+        astu::Vector2 v2;
+
+    };
+
+    std::vector<MovingLine> lines;
+
+    void UpdateLine(MovingLine& line, double dt);
+    void RenderLine(MovingLine& line);
+    void KeepWithinBoundaries(astu::Vector2 & p, astu::Vector2 & v);
 }; 
