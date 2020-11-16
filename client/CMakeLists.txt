@@ -17,5 +17,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(Game main.cpp LineRendererTestService.cpp SdlLineRenderer.cpp)
 
 # Specify required libraries
-target_link_libraries(Game astu)
+target_link_libraries(Game astu $ENV{SDL2_HOME}/lib/x64/SDL2.lib)
 
+IF (WIN32)
+    target_include_directories(Game PRIVATE $ENV{SDL2_HOME})
+ENDIF()
