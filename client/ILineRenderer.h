@@ -43,7 +43,6 @@ public:
      */
     virtual void DrawLine(double x1, double y1, double x2, double X2) = 0;
 
-
     /**
      * Sets the current drawing color used for all subsequent drawing calles.
      * 

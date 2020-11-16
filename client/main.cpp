@@ -43,7 +43,7 @@ int main()
   sm.AddService(std::make_shared<SdlEventService>());
   sm.AddService(std::make_shared<SdlRenderService>());
   sm.AddService(std::make_shared<SdlTimeService>());
-  sm.AddService(std::make_shared<SdlAudioService>());
+  // sm.AddService(std::make_shared<SdlAudioService>());
   
   sm.AddService(std::make_shared<SdlLineRenderer>(0));
   sm.AddService(std::make_shared<LineRendererTestService>());

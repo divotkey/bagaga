@@ -49,7 +49,6 @@ private:
     /** Enumeration for types of render commands. */
     enum CommandType {DRAW_LINE, SET_COLOR};
 
-
     struct DrawLineCommand {
         CommandType type;
         int x1, y1, x2, y2;

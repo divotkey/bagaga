@@ -56,7 +56,6 @@ private:
 
         /** The velocity of the second end point. */
         astu::Vector2 v2;
-
     };
 
     std::vector<MovingLine> lines;

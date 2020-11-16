@@ -30,6 +30,9 @@ void LineRendererTestService::OnStartup()
     }
 
     timeService = GetSM().FindService<astu::ITimeService>();
+    if (!timeService) {
+        throw std::logic_error("Time service required");
+    }
 
     auto & wm = GetSM().GetService<astu::IWindowManager>();
     width = wm.GetWidth();
@@ -38,7 +41,6 @@ void LineRendererTestService::OnStartup()
     for (int i = 0; i <NUM_LINES; ++i) {
         lines.push_back(MovingLine(width, height));
     }
-
 }
 
 void LineRendererTestService::OnShutdown() 
@@ -88,6 +90,7 @@ void LineRendererTestService::UpdateLine(MovingLine& line, double dt)
 {
     line.p1 += line.v1 * dt;
     line.p2 += line.v2 * dt;
+    
     KeepWithinBoundaries(line.p1, line.v1);
     KeepWithinBoundaries(line.p2, line.v2);
 }

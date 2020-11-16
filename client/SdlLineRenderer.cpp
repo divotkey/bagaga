@@ -73,7 +73,6 @@ void SdlLineRenderer::SetDrawColor(const astu::Color & c)
     commands.push_back(cmd);
 }
 
-
 void SdlLineRenderer::OnStartup()
 {
     // Intentionally left empty.
