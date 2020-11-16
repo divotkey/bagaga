@@ -48,10 +48,10 @@ void SdlLineRenderer::DrawLine(double x1, double y1, double x2, double y2)
     RenderCommand cmd;
 
     cmd.type = CommandType::DRAW_LINE;
-    cmd.line.x1 = x1;
-    cmd.line.y1 = y1;
-    cmd.line.x2 = x2;
-    cmd.line.y2 = y2;
+    cmd.line.x1 = static_cast<int>(x1);
+    cmd.line.y1 = static_cast<int>(y1);
+    cmd.line.x2 = static_cast<int>(x2);
+    cmd.line.y2 = static_cast<int>(y2);
 
     commands.push_back(cmd);
 }
@@ -65,10 +65,10 @@ void SdlLineRenderer::SetDrawColor(const astu::Color & c)
 
     RenderCommand cmd;
     cmd.type = CommandType::SET_COLOR;
-    cmd.color.r = c.r * 255;
-    cmd.color.g = c.g * 255;
-    cmd.color.b = c.b * 255;
-    cmd.color.a = c.a * 255;
+    cmd.color.r = static_cast<int>(c.r * 255);
+    cmd.color.g = static_cast<int>(c.g * 255);
+    cmd.color.b = static_cast<int>(c.b * 255);
+    cmd.color.a = static_cast<int>(c.a * 255);
 
     commands.push_back(cmd);
 }
