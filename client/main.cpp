@@ -50,7 +50,7 @@ int main()
 
   // configure application
   sm.GetService<IWindowManager>().SetTitle(kAppName + " - Version " + kAppVersion);
-  sm.GetService<IWindowManager>().SetSize(1366, 768);
+  sm.GetService<IWindowManager>().SetSize(640, 480);
 
   // start game loop
   sm.StartupAll();

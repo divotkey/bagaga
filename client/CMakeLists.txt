@@ -21,4 +21,7 @@ target_link_libraries(Game astu)
 
 IF (WIN32)
     target_include_directories(Game PRIVATE $ENV{SDL2_HOME})
+ELSEIF(APPLE)
+    target_include_directories(Game PRIVATE /Library/Frameworks/SDL2.framework/Headers)
+    target_link_libraries(Game /Library/Frameworks/SDL2.framework/Versions/A/SDL2)
 ENDIF()
