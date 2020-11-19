@@ -14,6 +14,8 @@
 
 #include <ServiceManager.h>
 #include <UpdateService.h>
+#include <Mouse.h>
+
 
 #include <SdlService.h>
 #include <SdlEventService.h>
@@ -49,7 +51,7 @@ public:
 	}
 
 	virtual void OnSignal(const MouseButtonEvent & event) override {
-		if (!event.pressed) {
+		if (!event.pressed || event.button != MouseButtonEvent::LEFT) {
 			// Only process button down events.
 			return;
 		}
@@ -84,6 +86,16 @@ private:
 	}
 };
 
+
+class Foo : public astu::ISignalListener<int> {
+public:
+
+	virtual void OnSignal(const int & signal) override {
+		std::cout << "got signal " << signal << std::endl;
+	}
+};
+
+
 /**
  * Adds services required for all application states.
  */
@@ -107,27 +119,38 @@ void AddCoreServices()
 	sm.AddService(std::make_shared<MouseButtonEventService>());
 	sm.GetService<MouseButtonEventService>().AddListener(std::make_shared<MyButtonHandler>());
 
-	// Audio service(s) not ready yet	
-	// sm.AddService(std::make_shared<SdlAudioService>());
+	// Signal example for integers.
+	sm.AddService(std::make_shared<SignalService<int>>());
+	SignalService<int> & intSignals = sm.GetService<SignalService<int>>();
+	intSignals.AddListener(std::make_shared<Foo>());
+	intSignals.QueueSignal(41);
+	intSignals.FireSignal(42);
 }
 
 void AddApplicationStates()
 {
 	// Fetch central state service.
-	auto & sm = ServiceManager::GetInstance().GetService<StateService>();
+	auto & ss = ServiceManager::GetInstance().GetService<StateService>();
 
 	// Add line render Demo.
-	sm.AddService("MovingLines", std::make_shared<SdlLineRenderer>(0));
-	sm.AddService("MovingLines", std::make_shared<LineRendererTestService>());
+	ss.CreateState("MovingLines"); // optional
+	ss.AddService("MovingLines", std::make_shared<SdlLineRenderer>(0));
+	ss.AddService("MovingLines", std::make_shared<LineRendererTestService>());
 
 	// Add blank screen.
-	sm.CreateState("Blank");
+	ss.CreateState("Blank");
 }
 
 int main()
 {
 	AddCoreServices();
 	AddApplicationStates();
+
+	Mouse mouse;
+
+	if (mouse.IsPressed(1)) {
+		std::cout << "mouse button pressed" << std::endl;
+	}
 
 	// Fetch service manager (realized as a singleton)
 	auto &sm = ServiceManager::GetInstance();
@@ -144,6 +167,8 @@ int main()
 	// Run game loop
 	auto &updater = sm.GetService<UpdateService>();
 	auto &event = sm.GetService<SdlEventService>();
+
+	sm.GetService<SignalService<int>>().QueueSignal(17);
 
 	while (!event.IsQuit())
 	{
