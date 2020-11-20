@@ -15,6 +15,9 @@
 #include "Color.h"
 
 
+/**
+ * Interface for simple line rendering.
+ */
 class ILineRenderer {
 public:
 

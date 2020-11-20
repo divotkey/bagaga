@@ -9,14 +9,14 @@
  * Copyright 2020 Bagaga Development Team. All rights reserved.                                             
  */
 
+// Standard C++ Libryry
 #include <iostream>
 #include <string>
 
+// AST Utilities
 #include <ServiceManager.h>
 #include <UpdateService.h>
 #include <Mouse.h>
-
-
 #include <SdlService.h>
 #include <SdlEventService.h>
 #include <SdlVideoService.h>
@@ -24,22 +24,23 @@
 #include <SdlTimeService.h>
 #include <SdlAudioService.h>
 #include <StateService.h>
-
 #include <EntityService.h>
+#include <SignalService.h>
+#include <Events.h>
 
+// Bagaga Commons
 #include "SdlLineRenderer.h"
+#include "WindowTitleService.h"
+
+// Applications specific
 #include "LineRendererTestService.h"
-#include "Pose2D.h"
-#include "CommandQueue.h"
-#include "ListenerManager.h"
-#include "SignalService.h"
-#include "Events.h"
+
 
 using namespace std;
 using namespace astu;
 
 const std::string kAppName = "Bagaga Demo";
-const std::string kAppVersion = "0.1.0";
+const std::string kAppVersion = "0.2.0";
 
 class MyButtonHandler : public astu::MouseButtonListener {
 public:
@@ -86,16 +87,6 @@ private:
 	}
 };
 
-
-class Foo : public astu::ISignalListener<int> {
-public:
-
-	virtual void OnSignal(const int & signal) override {
-		std::cout << "got signal " << signal << std::endl;
-	}
-};
-
-
 /**
  * Adds services required for all application states.
  */
@@ -118,13 +109,6 @@ void AddCoreServices()
 	// Experimental event-based input handling.
 	sm.AddService(std::make_shared<MouseButtonEventService>());
 	sm.GetService<MouseButtonEventService>().AddListener(std::make_shared<MyButtonHandler>());
-
-	// Signal example for integers.
-	sm.AddService(std::make_shared<SignalService<int>>());
-	SignalService<int> & intSignals = sm.GetService<SignalService<int>>();
-	intSignals.AddListener(std::make_shared<Foo>());
-	intSignals.QueueSignal(41);
-	intSignals.FireSignal(42);
 }
 
 void AddApplicationStates()
@@ -134,11 +118,13 @@ void AddApplicationStates()
 
 	// Add line render Demo.
 	ss.CreateState("MovingLines"); // optional
+	ss.AddService("MovingLines", std::make_shared<WindowTitleService>("(MovingLines)"));
 	ss.AddService("MovingLines", std::make_shared<SdlLineRenderer>(0));
 	ss.AddService("MovingLines", std::make_shared<LineRendererTestService>());
 
 	// Add blank screen.
-	ss.CreateState("Blank");
+	ss.CreateState("Blank");	// optional
+	ss.AddService("Blank", std::make_shared<WindowTitleService>("(Blank)"));
 }
 
 int main()
@@ -167,8 +153,6 @@ int main()
 	// Run game loop
 	auto &updater = sm.GetService<UpdateService>();
 	auto &event = sm.GetService<SdlEventService>();
-
-	sm.GetService<SignalService<int>>().QueueSignal(17);
 
 	while (!event.IsQuit())
 	{

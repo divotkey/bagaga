@@ -16,6 +16,13 @@
 #include <cstdint>
 #include "ILineRenderer.h"
 
+/**
+ * A SDL-based implementation of the ILineRenderer interface.
+ * 
+ * This service is a SDL render layer and uses the command design pattern
+ * to store the render calls and replays them when the render layer should
+ * be rendered.
+ */
 class SdlLineRenderer : public astu::BaseSdlRenderLayer, public ILineRenderer {
 public:
 

@@ -20,6 +20,13 @@
 class LineRendererTestService : public astu::UpdatableBaseService {
 public:
 
+    /**
+     * Constructor.
+     * 
+     * @param drawStatic    whether to render static elements
+     */
+    LineRendererTestService(bool drawStatic = false);
+
 protected:
 
     // Inherited via UpdatableBaseService
@@ -33,6 +40,9 @@ private:
 
     /** Used for fast access to time service. */
     std::shared_ptr<astu::ITimeService> timeService;
+
+    /** Whether to draw static elements. */
+    bool drawStatic;
 
     /** The width of the output window. */
     int width;

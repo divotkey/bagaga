@@ -21,6 +21,12 @@
 #define MIN_VEL     150.0
 #define NUM_LINES   15
 
+LineRendererTestService::LineRendererTestService(bool _drawStatic)
+    : drawStatic(_drawStatic)
+{
+    // Intentionally left empty.
+}
+
 void LineRendererTestService::OnStartup() 
 {
     // Used to have fast access to line renderer.
@@ -53,14 +59,16 @@ void LineRendererTestService::OnShutdown()
 void LineRendererTestService::OnUpdate() 
 {
     // Draw static cross.
-    lineRenderer->SetDrawColor(astu::WebColors::Red);    
-    lineRenderer->DrawLine(0, 0, width, height);
-    lineRenderer->SetDrawColor(astu::WebColors::Green);
-    lineRenderer->DrawLine(width, 0, 0, height);
-    lineRenderer->SetDrawColor(astu::WebColors::Blue);
-    lineRenderer->DrawLine(width / 2, 0, width / 2, height);
-    lineRenderer->SetDrawColor(astu::WebColors::Yellow);
-    lineRenderer->DrawLine(0, height / 2, width, height / 2);
+    if (drawStatic) {
+        lineRenderer->SetDrawColor(astu::WebColors::Red);    
+        lineRenderer->DrawLine(0, 0, width, height);
+        lineRenderer->SetDrawColor(astu::WebColors::Green);
+        lineRenderer->DrawLine(width, 0, 0, height);
+        lineRenderer->SetDrawColor(astu::WebColors::Blue);
+        lineRenderer->DrawLine(width / 2, 0, width / 2, height);
+        lineRenderer->SetDrawColor(astu::WebColors::Yellow);
+        lineRenderer->DrawLine(0, height / 2, width, height / 2);
+    }
 
     // Update moving lines
     for (auto & line : lines) {
