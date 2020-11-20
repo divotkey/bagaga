@@ -25,7 +25,6 @@
 #include <SdlAudioService.h>
 #include <StateService.h>
 #include <EntityService.h>
-#include <SignalService.h>
 #include <Events.h>
 
 // Bagaga Commons
@@ -34,6 +33,7 @@
 
 // Applications specific
 #include "LineRendererTestService.h"
+#include "EntityTestService.h"
 
 
 using namespace std;
@@ -58,7 +58,7 @@ public:
 		}
 		// std::cout << "button down " << event.button << std::endl;
 
-		stateIdx = (stateIdx + 1) % 2;
+		stateIdx = (stateIdx + 1) % 3;
 		SwitchState();
 	}
 
@@ -75,7 +75,13 @@ private:
 			ServiceManager::GetInstance().GetService<StateService>()
 				.SwitchState("MovingLines");
 			break;
+
 		case 1:
+			ServiceManager::GetInstance().GetService<StateService>()
+				.SwitchState("Entities");
+			break;
+
+		case 2:
 			ServiceManager::GetInstance().GetService<StateService>()
 				.SwitchState("Blank");
 			break;
@@ -119,8 +125,15 @@ void AddApplicationStates()
 	// Add line render Demo.
 	ss.CreateState("MovingLines"); // optional
 	ss.AddService("MovingLines", std::make_shared<WindowTitleService>("(MovingLines)"));
-	ss.AddService("MovingLines", std::make_shared<SdlLineRenderer>(0));
+	ss.AddService("MovingLines", std::make_shared<SdlLineRenderer>());
 	ss.AddService("MovingLines", std::make_shared<LineRendererTestService>());
+
+	// Add entity Demo.
+	ss.CreateState("Entities"); // optional
+	ss.AddService("Entities", std::make_shared<WindowTitleService>("(Entities)"));
+	ss.AddService("Entities", std::make_shared<EntityService>());
+	ss.AddService("Entities", std::make_shared<SdlLineRenderer>());
+	ss.AddService("Entities", std::make_shared<EntityTestService>());
 
 	// Add blank screen.
 	ss.CreateState("Blank");	// optional

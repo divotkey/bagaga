@@ -17,7 +17,9 @@ add_executable(Demo
         main.cpp 
         ../common/SdlLineRenderer.cpp
         ../common/WindowTitleService.cpp
+        ../common/PolylineVisualSystem.cpp
         LineRendererTestService.cpp 
+        EntityTestService.cpp
         )
 
 #add include files of commons directory
