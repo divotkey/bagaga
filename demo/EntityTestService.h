@@ -31,4 +31,15 @@ protected:
 
 private:
     std::shared_ptr<Polyline::Polygon> shape1;
+    std::shared_ptr<Polyline::Polygon> shape2;
+
+    /**
+     * Adds a test entity at a certain position.
+     * 
+     * @param t the type of the entity to create
+     * @param p the position of the test entity in world space
+     * @param s the rotation speed in degrees per seconds
+     * @param c the color of the test entity
+     */
+    void AddTestEntity(int t, const astu::Vector2 & p, double s, const astu::Color & c);
 };

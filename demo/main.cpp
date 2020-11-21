@@ -29,7 +29,10 @@
 
 // Bagaga Commons
 #include "SdlLineRenderer.h"
+#include "PolylineVisualSystem.h"
+#include "AutoRotateSystem.h"
 #include "WindowTitleService.h"
+
 
 // Applications specific
 #include "LineRendererTestService.h"
@@ -133,7 +136,10 @@ void AddApplicationStates()
 	ss.AddService("Entities", std::make_shared<WindowTitleService>("(Entities)"));
 	ss.AddService("Entities", std::make_shared<EntityService>());
 	ss.AddService("Entities", std::make_shared<SdlLineRenderer>());
+	ss.AddService("Entities", std::make_shared<AutoRotateSystem>());
+	ss.AddService("Entities", std::make_shared<PolylineVisualSystem>());
 	ss.AddService("Entities", std::make_shared<EntityTestService>());
+	
 
 	// Add blank screen.
 	ss.CreateState("Blank");	// optional

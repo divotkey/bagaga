@@ -14,7 +14,7 @@
 #include <IteratingEntitySystem.h>
 #include "ILineRenderer.h"
 
-class PolylineVisualSystem : public astu::IteratingEntitySystem {
+class AutoRotateSystem : public astu::IteratingEntitySystem {
 public:
 
     /**
@@ -22,19 +22,16 @@ public:
      * 
      * @param priority  the update priority of this service
      */
-    PolylineVisualSystem(int priority = 0);
+    AutoRotateSystem(int priority = 0);
 
 protected:
 
-        // Inherited via IteratingEntitySystem
-        virtual void OnStartup() override;
-        virtual void OnShutdown() override;
-        virtual void ProcessEntity(astu::Entity & e) override;
+    // Inherited via IteratingEntitySystem
+    virtual void OnStartup() override;
+    virtual void OnShutdown() override;
+    virtual void ProcessEntity(astu::Entity & e) override;
 
 private:
     /** A constant describing the family of entities this system processes. */
     static const astu::EntityFamily FAMILY;
-
-    /** The line renderer used to render the visuals. */
-    std::shared_ptr<ILineRenderer> renderer;
 };

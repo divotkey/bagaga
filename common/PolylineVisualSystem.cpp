@@ -25,7 +25,7 @@ PolylineVisualSystem::PolylineVisualSystem(int priority)
     // Intentionally left empty.
 }
 
-void PolylineVisualSystem::Startup()
+void PolylineVisualSystem::OnStartup()
 {
     renderer = GetSM().FindService<ILineRenderer>();
     if (!renderer) {
@@ -33,7 +33,7 @@ void PolylineVisualSystem::Startup()
     }
 }
 
-void PolylineVisualSystem::Shutdown()
+void PolylineVisualSystem::OnShutdown()
 {
     renderer = nullptr;
 }
@@ -49,11 +49,24 @@ void PolylineVisualSystem::ProcessEntity(Entity & e)
     auto & polygon = *poly.polygon;
     assert(polygon.size() >= 2);
 
-    Vector2* p1 = polygon.data();
-    Vector2* p2 = p1 + 1;
+    Vector2* ptr = polygon.data();
+    Vector2 p1 = *ptr++;
+    p1.Rotate(pose.angle);
+    p1 += pose.pos;
+
     for (size_t i = 0; i < polygon.size() - 1; ++i) {
-        renderer->DrawLine(*p1, *p2);
+        Vector2 p2 = *ptr++;
+        p2.Rotate(pose.angle);
+        p2 += pose.pos;
+        renderer->DrawLine(p1, p2);
         p1 = p2;
-        ++p2;
     }
+
+    if (poly.closed) {
+        Vector2 p2 = *polygon.data();
+        p2.Rotate(pose.angle);
+        p2 += pose.pos;
+        renderer->DrawLine(p1, p2);
+    }
+
 }

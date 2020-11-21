@@ -18,6 +18,7 @@ add_executable(Demo
         ../common/SdlLineRenderer.cpp
         ../common/WindowTitleService.cpp
         ../common/PolylineVisualSystem.cpp
+        ../common/AutoRotateSystem.cpp
         LineRendererTestService.cpp 
         EntityTestService.cpp
         )

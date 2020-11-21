@@ -13,18 +13,17 @@
 #include <Vector2.h>
 #include <Color.h>
 
-class Polyline : public astu::EntityComponent {
+class AutoRotate : public astu::EntityComponent {
 public:
-    using Polygon = std::vector<astu::Vector2>;
+    double speed;
 
-    astu::Color color;
-    const std::shared_ptr<Polygon> polygon;
-    bool closed;
-
-    Polyline(const std::shared_ptr<Polygon> poly, const astu::Color & c = astu::WebColors::Red, bool _closed = true)
-        : color(c)
-        , polygon(poly)
-        , closed(_closed)
+    /**
+     * Constructor.
+     * 
+     * @param s the rotation speed in radians per second
+     */
+    AutoRotate(double s = 1.0)
+        : speed(s)
     {
         // Intentionally left empty.
     }
