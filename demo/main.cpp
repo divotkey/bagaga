@@ -14,6 +14,7 @@
 #include <string>
 
 // AST Utilities
+#include <AstUtils.h>
 #include <ServiceManager.h>
 #include <UpdateService.h>
 #include <Mouse.h>
@@ -148,6 +149,7 @@ void AddApplicationStates()
 
 int main()
 {
+	SayVersion();
 	AddCoreServices();
 	AddApplicationStates();
 
