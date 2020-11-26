@@ -13,6 +13,8 @@
 #include <Vector2.h>
 #include <Color.h>
 
+#pragma once
+
 class Polyline : public astu::EntityComponent {
 public:
     using Polygon = std::vector<astu::Vector2>;

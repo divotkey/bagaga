@@ -34,17 +34,16 @@
 #include "AutoRotateSystem.h"
 #include "WindowTitleService.h"
 
-
 // Applications specific
 #include "LineRendererTestService.h"
 #include "EntityTestService.h"
-
+#include "CreateEntityTestService.h"
 
 using namespace std;
 using namespace astu;
 
 const std::string kAppName = "Bagaga Demo";
-const std::string kAppVersion = "0.2.0";
+const std::string kAppVersion = "0.3.0";
 
 class MyButtonHandler : public astu::MouseButtonListener {
 public:
@@ -87,7 +86,7 @@ private:
 
 		case 2:
 			ServiceManager::GetInstance().GetService<StateService>()
-				.SwitchState("Blank");
+				.SwitchState("Create Entities");
 			break;
 
 		default:
@@ -140,11 +139,15 @@ void AddApplicationStates()
 	ss.AddService("Entities", std::make_shared<AutoRotateSystem>());
 	ss.AddService("Entities", std::make_shared<PolylineVisualSystem>());
 	ss.AddService("Entities", std::make_shared<EntityTestService>());
-	
 
 	// Add blank screen.
-	ss.CreateState("Blank");	// optional
-	ss.AddService("Blank", std::make_shared<WindowTitleService>("(Blank)"));
+	ss.CreateState("Create Entities");	// optional
+	ss.AddService("Create Entities", std::make_shared<WindowTitleService>("(Create Entities)"));
+	ss.AddService("Create Entities", std::make_shared<EntityService>());
+	ss.AddService("Create Entities", std::make_shared<SdlLineRenderer>());
+	ss.AddService("Create Entities", std::make_shared<AutoRotateSystem>());
+	ss.AddService("Create Entities", std::make_shared<PolylineVisualSystem>());
+	ss.AddService("Create Entities", std::make_shared<CreateEntityTestService>());
 }
 
 int main()

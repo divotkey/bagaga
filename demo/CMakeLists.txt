@@ -21,6 +21,7 @@ add_executable(Demo
         ../common/AutoRotateSystem.cpp
         LineRendererTestService.cpp 
         EntityTestService.cpp
+        CreateEntityTestService.cpp
         )
 
 #add include files of commons directory
