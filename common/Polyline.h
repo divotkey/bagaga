@@ -9,11 +9,11 @@
  * Copyright 2020 Bagaga Development Team. All rights reserved.                                             
  */
 
+#pragma once
+
 #include <EntityService.h>
 #include <Vector2.h>
 #include <Color.h>
-
-#pragma once
 
 class Polyline : public astu::EntityComponent {
 public:
