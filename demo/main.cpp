@@ -150,6 +150,7 @@ void AddApplicationStates()
 	ss.AddService("Create Entities", std::make_shared<CreateEntityTestService>());
 }
 
+
 int main()
 {
 	SayVersion();
@@ -172,7 +173,7 @@ int main()
 	// Start services
 	sm.StartupAll();
 
-	sm.GetService<StateService>().SwitchState("MovingLines");
+	// sm.GetService<StateService>().SwitchState("MovingLines");
 
 	// Run game loop
 	auto &updater = sm.GetService<UpdateService>();
