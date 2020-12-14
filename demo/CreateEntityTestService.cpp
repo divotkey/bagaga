@@ -26,8 +26,8 @@
 
 using namespace astu;
 
-CreateEntityTestService::CreateEntityTestService(int updatePriority)
-    : UpdatableBaseService("Create Entity Test", updatePriority)
+CreateEntityTestService::CreateEntityTestService()
+    : BaseService("Create Entity Test")
 {
     // Create rectangular shape.
     shape1 = std::make_shared<Polyline::Polygon>();  
@@ -53,16 +53,6 @@ void CreateEntityTestService::OnShutdown()
 {
     GetSM().GetService<MouseButtonEventService>()
         .RemoveListener(shared_as<CreateEntityTestService>());
-}
-
-void CreateEntityTestService::OnUpdate()
-{
-    // Mouse mouse;
-
-    // if (mouse.IsPressed(3)) {
-    //     Vector2 pos(mouse.GetCursorX(), mouse.GetCursorY());
-    //     AddTestEntity(1, pos, 100, WebColors::White);
-    // }
 }
 
 void CreateEntityTestService::OnSignal(const MouseButtonEvent & signal)

@@ -33,17 +33,19 @@
 #include "PolylineVisualSystem.h"
 #include "AutoRotateSystem.h"
 #include "WindowTitleService.h"
+#include "CollisionTestService.h"
 
 // Applications specific
 #include "LineRendererTestService.h"
 #include "EntityTestService.h"
 #include "CreateEntityTestService.h"
+#include "LinearMovementSystem.h"
 
 using namespace std;
 using namespace astu;
 
 const std::string kAppName = "Bagaga Demo";
-const std::string kAppVersion = "0.3.0";
+const std::string kAppVersion = "0.4.0";
 
 class MyButtonHandler : public astu::MouseButtonListener {
 public:
@@ -61,7 +63,7 @@ public:
 		}
 		// std::cout << "button down " << event.button << std::endl;
 
-		stateIdx = (stateIdx + 1) % 3;
+		stateIdx = (stateIdx + 1) % 4;
 		SwitchState();
 	}
 
@@ -87,6 +89,11 @@ private:
 		case 2:
 			ServiceManager::GetInstance().GetService<StateService>()
 				.SwitchState("Create Entities");
+			break;
+
+		case 3:
+			ServiceManager::GetInstance().GetService<StateService>()
+				.SwitchState("Collision Test");
 			break;
 
 		default:
@@ -125,13 +132,13 @@ void AddApplicationStates()
 	// Fetch central state service.
 	auto & ss = ServiceManager::GetInstance().GetService<StateService>();
 
-	// Add line render Demo.
+	// Add line render demo state.
 	ss.CreateState("MovingLines"); // optional
 	ss.AddService("MovingLines", std::make_shared<WindowTitleService>("(MovingLines)"));
 	ss.AddService("MovingLines", std::make_shared<SdlLineRenderer>());
 	ss.AddService("MovingLines", std::make_shared<LineRendererTestService>());
 
-	// Add entity Demo.
+	// Add entity demo state.
 	ss.CreateState("Entities"); // optional
 	ss.AddService("Entities", std::make_shared<WindowTitleService>("(Entities)"));
 	ss.AddService("Entities", std::make_shared<EntityService>());
@@ -140,7 +147,7 @@ void AddApplicationStates()
 	ss.AddService("Entities", std::make_shared<PolylineVisualSystem>());
 	ss.AddService("Entities", std::make_shared<EntityTestService>());
 
-	// Add blank screen.
+	// Add create entities test state.
 	ss.CreateState("Create Entities");	// optional
 	ss.AddService("Create Entities", std::make_shared<WindowTitleService>("(Create Entities)"));
 	ss.AddService("Create Entities", std::make_shared<EntityService>());
@@ -148,7 +155,16 @@ void AddApplicationStates()
 	ss.AddService("Create Entities", std::make_shared<AutoRotateSystem>());
 	ss.AddService("Create Entities", std::make_shared<PolylineVisualSystem>());
 	ss.AddService("Create Entities", std::make_shared<CreateEntityTestService>());
-}
+
+	// Add collision test state.
+	ss.CreateState("Collision Test");	// optional
+	ss.AddService("Collision Test", std::make_shared<WindowTitleService>("(Collision Test)"));
+	ss.AddService("Collision Test", std::make_shared<EntityService>());
+	ss.AddService("Collision Test", std::make_shared<SdlLineRenderer>());
+	ss.AddService("Collision Test", std::make_shared<AutoRotateSystem>());
+	ss.AddService("Collision Test", std::make_shared<PolylineVisualSystem>());
+	ss.AddService("Collision Test", std::make_shared<LinearMovementSystem>());	
+	ss.AddService("Collision Test", std::make_shared<CollisionTestService>());}
 
 int main()
 {
