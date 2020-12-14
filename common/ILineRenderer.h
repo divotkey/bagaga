@@ -32,7 +32,7 @@ public:
      * @parma p1    the first point of the line
      * @parma p2    the second point of the line
      */
-    virtual void DrawLine(const astu::Vector2 & p1, const astu::Vector2 & p2) {
+    virtual void DrawLine(const astu::Vector2<double> & p1, const astu::Vector2<double> & p2) {
         DrawLine(p1.x, p1.y, p2.x, p2.y);
     }
 

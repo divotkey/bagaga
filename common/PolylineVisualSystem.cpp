@@ -49,8 +49,8 @@ void PolylineVisualSystem::ProcessEntity(Entity & e)
     auto & polygon = *poly.polygon;
     assert(polygon.size() >= 2);
 
-    Vector2* ptr = polygon.data();
-    Vector2 p1 = *ptr++;
+    Vector2<double>* ptr = polygon.data();
+    Vector2<double> p1 = *ptr++;
     p1.Rotate(pose.angle);
     p1 += pose.pos;
 
