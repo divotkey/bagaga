@@ -30,16 +30,16 @@ EntityTestService::EntityTestService()
 {
     // Create rectangular shape.
     shape1 = std::make_shared<Polyline::Polygon>();  
-    shape1->push_back(Vector2(-ENTITY_SIZE, -ENTITY_SIZE));  
-    shape1->push_back(Vector2(-ENTITY_SIZE, ENTITY_SIZE));  
-    shape1->push_back(Vector2(ENTITY_SIZE, ENTITY_SIZE));  
-    shape1->push_back(Vector2(ENTITY_SIZE, -ENTITY_SIZE));  
+    shape1->push_back(Vector2<double>(-ENTITY_SIZE, -ENTITY_SIZE));  
+    shape1->push_back(Vector2<double>(-ENTITY_SIZE, ENTITY_SIZE));  
+    shape1->push_back(Vector2<double>(ENTITY_SIZE, ENTITY_SIZE));  
+    shape1->push_back(Vector2<double>(ENTITY_SIZE, -ENTITY_SIZE));  
 
     // Create triangular shape.
     shape2 = std::make_shared<Polyline::Polygon>();  
-    shape2->push_back(Vector2(-ENTITY_SIZE, -ENTITY_SIZE));  
-    shape2->push_back(Vector2(ENTITY_SIZE, -ENTITY_SIZE));  
-    shape2->push_back(Vector2(0, ENTITY_SIZE));  
+    shape2->push_back(Vector2<double>(-ENTITY_SIZE, -ENTITY_SIZE));  
+    shape2->push_back(Vector2<double>(ENTITY_SIZE, -ENTITY_SIZE));  
+    shape2->push_back(Vector2<double>(0, ENTITY_SIZE));  
 }
 
 void EntityTestService::OnStartup()
@@ -49,7 +49,7 @@ void EntityTestService::OnStartup()
 
     double r = sqrt(ENTITY_SIZE * ENTITY_SIZE * 2);
     for(int i = 0; i <NUM_ENTITIES; ++i) {
-        Vector2 p;
+        Vector2<double> p;
         p.x = GetRandomDouble(r, wm.GetWidth() - r);
         p.y = GetRandomDouble(r, wm.GetHeight() - r);
 
@@ -67,7 +67,7 @@ void EntityTestService::OnShutdown()
 }
 
 
-void EntityTestService::AddTestEntity(int t, const Vector2 & p, double s, const Color & c)
+void EntityTestService::AddTestEntity(int t, const Vector2<double> & p, double s, const Color & c)
 {
     auto entity = std::make_shared<Entity>();
     entity->AddComponent(std::make_shared<Pose2D>(p));

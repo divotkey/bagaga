@@ -17,7 +17,7 @@
 
 class Polyline : public astu::EntityComponent {
 public:
-    using Polygon = std::vector<astu::Vector2>;
+    using Polygon = std::vector<astu::Vector2<double>>;
 
     astu::Color color;
     const std::shared_ptr<Polygon> polygon;

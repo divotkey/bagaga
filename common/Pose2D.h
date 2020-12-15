@@ -9,12 +9,14 @@
  * Copyright 2020 Bagaga Development Team. All rights reserved.                                             
  */
 
+#pragma once
+
 #include <EntityService.h>
 #include <Vector2.h>
 
 class Pose2D : public astu::EntityComponent {
 public:
-    astu::Vector2 pos;
+    astu::Vector2<double> pos;
     double angle;
 
     Pose2D(double x = 0, double y = 0, double a = 0)
@@ -24,7 +26,7 @@ public:
         // Intentionally left empty.            
     }
 
-   Pose2D(const astu::Vector2 & p, double a = 0)
+   Pose2D(const astu::Vector2<double> & p, double a = 0)
         : pos(p)
         , angle(a)
     {

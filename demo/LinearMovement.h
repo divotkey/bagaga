@@ -9,22 +9,35 @@
  * Copyright 2020 Bagaga Development Team. All rights reserved.                                             
  */
 
-#pragma once
-
 #include <EntityService.h>
+#include <Vector2.h>
 
-class AutoRotate : public astu::EntityComponent {
+class LinearMovement : public astu::EntityComponent {
 public:
-    double speed;
+    /** The velocity of the linear movement. */
+    astu::Vector2<double> vel;
 
     /**
      * Constructor.
      * 
-     * @param s the rotation speed in radians per second
+     * @param v the velicoty
      */
-    AutoRotate(double s = 1.0)
-        : speed(s)
+    LinearMovement(const astu::Vector2<double> & v)
+        : vel(v)
     {
         // Intentionally left empty.
     }
+
+    /**
+     * Constructor.
+     * 
+     * @param vx the x-component of the velicoty
+     * @param vy the y-component of the velicoty
+     */
+    LinearMovement(double vx, double vy)
+        : vel(vx, vy)
+    {
+        // Intentionally left empty.
+    }
+
 };

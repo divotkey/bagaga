@@ -108,7 +108,7 @@ void LineRendererTestService::RenderLine(MovingLine& line)
     lineRenderer->DrawLine(line.p1, line.p2);
 }
 
-void LineRendererTestService::KeepWithinBoundaries(astu::Vector2 & p, astu::Vector2 & v)
+void LineRendererTestService::KeepWithinBoundaries(astu::Vector2<double> & p, astu::Vector2<double> & v)
 {
     if (p.x < 0) {
         p.x = 0;

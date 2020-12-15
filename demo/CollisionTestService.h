@@ -12,20 +12,16 @@
 #pragma once
 
 #include <memory>
-#include <UpdateService.h>
-#include <Events.h>
+#include <Service.h>
 #include "Polyline.h"
 
-class CreateEntityTestService 
-    : public astu::BaseService
-    , public astu::MouseButtonListener
-{
+class CollisionTestService : public astu::BaseService {
 public:
 
     /**
      * Constructor.
      */
-    CreateEntityTestService();
+    CollisionTestService();
 
 protected:
 
@@ -33,20 +29,15 @@ protected:
     virtual void OnStartup() override;
     virtual void OnShutdown() override;
 
-    // Inherited via MouseButtonListener
-    virtual void OnSignal(const astu::MouseButtonEvent & signal) override;  
-
 private:
-    std::shared_ptr<Polyline::Polygon> shape1;
-    std::shared_ptr<Polyline::Polygon> shape2;
+    std::shared_ptr<Polyline::Polygon> shape;
 
     /**
      * Adds a test entity at a certain position.
      * 
-     * @param t the type of the entity to create
      * @param p the position of the test entity in world space
      * @param s the rotation speed in degrees per seconds
      * @param c the color of the test entity
      */
-    void AddTestEntity(int t, const astu::Vector2<double> & p, double s, const astu::Color & c);
+    void AddTestEntity(const astu::Vector2<double> & p, double s, const astu::Color & c);
 };

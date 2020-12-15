@@ -41,5 +41,5 @@ private:
      * @param s the rotation speed in degrees per seconds
      * @param c the color of the test entity
      */
-    void AddTestEntity(int t, const astu::Vector2 & p, double s, const astu::Color & c);
+    void AddTestEntity(int t, const astu::Vector2<double> & p, double s, const astu::Color & c);
 };

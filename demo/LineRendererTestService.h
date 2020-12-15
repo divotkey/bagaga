@@ -56,21 +56,21 @@ private:
         MovingLine(double width, double height);
 
         /** The first point of the moving line. */
-        astu::Vector2 p1;
+        astu::Vector2<double> p1;
 
         /** The second point of the moving line. */
-        astu::Vector2 p2;
+        astu::Vector2<double> p2;
 
         /** The velocity of the first end point. */
-        astu::Vector2 v1;
+        astu::Vector2<double> v1;
 
         /** The velocity of the second end point. */
-        astu::Vector2 v2;
+        astu::Vector2<double> v2;
     };
 
     std::vector<MovingLine> lines;
 
     void UpdateLine(MovingLine& line, double dt);
     void RenderLine(MovingLine& line);
-    void KeepWithinBoundaries(astu::Vector2 & p, astu::Vector2 & v);
+    void KeepWithinBoundaries(astu::Vector2<double> & p, astu::Vector2<double> & v);
 }; 
