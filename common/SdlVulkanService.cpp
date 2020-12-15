@@ -13,6 +13,10 @@
 
 namespace astu {
 
+    const std::vector<const char*> kValidationLayers = { 
+        "VK_LAYER_KHRONOS_validation"
+    };
+
     SdlVulkanService::SdlVulkanService(int priority)
         : UpdatableBaseService("SDL Vulkan", priority)
         , vkInstance(nullptr)
@@ -38,11 +42,11 @@ namespace astu {
         //     "Required Vulkan Extensions: %s", 
         //     MakeCsv(extensionNames).c_str());
 
-        // auto layerNames = GetAvailableVulkanLayers();
-        // SDL_LogVerbose(
-        //     SDL_LOG_CATEGORY_VIDEO, 
-        //     "Available Vulkan Layers: %s", 
-        //     MakeCsv(layerNames).c_str());
+        auto layerNames = GetAvailableVulkanLayers();
+        SDL_LogVerbose(
+            SDL_LOG_CATEGORY_VIDEO, 
+            "Available Vulkan Layers: %s", 
+            MakeCsv(layerNames).c_str());
 
     }
 

@@ -33,8 +33,12 @@ namespace astu {
 
 
     private:
+        /** The name of used validation layers in debug mode. */
+        static const std::vector<const char*> kValidationLayers;        
+
         /** The Vulkan instance. */
         VkInstance vkInstance;
+
 
 
         void Cleanup();
