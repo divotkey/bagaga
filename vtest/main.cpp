@@ -52,7 +52,7 @@ void AddCoreServices()
 	// Add services requried for SDL-based core functionality
 	sm.AddService(std::make_shared<SdlService>(true, true));
 	sm.AddService(std::make_shared<SdlVideoService>());
-	sm.AddService(std::make_shared<SdlVulkanService>());
+	sm.AddService(std::make_shared<SdlVulkanService>(true));
 	sm.AddService(std::make_shared<SdlEventService>());
 	sm.AddService(std::make_shared<SdlTimeService>());
 	
@@ -101,7 +101,7 @@ int main()
 
 	// configure application
 	sm.GetService<IWindowManager>().SetTitle(kAppName + " - Version " + kAppVersion);
-	sm.GetService<IWindowManager>().SetSize(640, 480);
+	sm.GetService<IWindowManager>().SetSize(800, 600);
 	sm.GetService<SdlVideoService>().EnableVulkanSupport(true);
 
 	// Start services
