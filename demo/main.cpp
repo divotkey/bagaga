@@ -33,6 +33,7 @@
 #include "PolylineVisualSystem.h"
 #include "AutoRotateSystem.h"
 #include "WindowTitleService.h"
+#include "CollisionDetectionSystem.h"
 #include "CollisionTestService.h"
 
 // Applications specific
@@ -164,6 +165,7 @@ void AddApplicationStates()
 	ss.AddService("Collision Test", std::make_shared<AutoRotateSystem>());
 	ss.AddService("Collision Test", std::make_shared<PolylineVisualSystem>());
 	ss.AddService("Collision Test", std::make_shared<LinearMovementSystem>());	
+	ss.AddService("Collision Test", std::make_shared<CollisionDetectionSystem>());	
 	ss.AddService("Collision Test", std::make_shared<CollisionTestService>());}
 
 int main()
@@ -188,7 +190,7 @@ int main()
 	// Start services
 	sm.StartupAll();
 
-	sm.GetService<StateService>().SwitchState("MovingLines");
+	sm.GetService<StateService>().SwitchState("Collision Test");
 
 	// Run game loop
 	auto &updater = sm.GetService<UpdateService>();

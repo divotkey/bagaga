@@ -18,12 +18,12 @@
 #include <EntityService.h>
 #include "IWindowManager.h"
 #include "Pose2D.h"
-#include "AutoRotate.h"
+#include "CircleCollider.h"
 #include "LinearMovement.h"
 #include "CollisionTestService.h"
 
 #define ENTITY_RADIUS 30.0
-#define NUM_ENTITIES 5
+#define NUM_ENTITIES 15
 
 
 using namespace astu;
@@ -37,7 +37,7 @@ CollisionTestService::CollisionTestService()
 
     double da = (2 * M_PI) / nSegments;
     for(int i = 0; i < nSegments; ++i) {
-        Vector2<double> v(ENTITY_RADIUS / 2, 0);
+        Vector2<double> v(ENTITY_RADIUS, 0);
         v.Rotate(da * i);
         shape->push_back(v);
     }
@@ -70,8 +70,8 @@ void CollisionTestService::AddTestEntity(const Vector2<double> & p, double s, co
     auto entity = std::make_shared<Entity>();
     entity->AddComponent(std::make_shared<Pose2D>(p));
     entity->AddComponent(std::make_shared<Polyline>(shape, c));
-    // entity->AddComponent(std::make_shared<AutoRotate>(ToRadians(s)));
     entity->AddComponent(std::make_shared<LinearMovement>(v));
+    entity->AddComponent(std::make_shared<CircleCollider>(ENTITY_RADIUS));
 
     auto & es = GetSM().GetService<EntityService>();
     es.AddEntity(entity);
