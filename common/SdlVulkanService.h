@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 #include <vector>
 #include <vulkan/vulkan.h>
 #include "UpdateService.h"
@@ -34,10 +35,25 @@ namespace astu {
         virtual void OnShutdown() override;
         virtual void OnUpdate() override;
 
-
     private:
         /** The name of used validation layers in debug mode. */
         static const std::vector<const char*> kValidationLayers;        
+
+        /** The name of used device extensions. */
+        static const std::vector<const char*> kDeviceExtensions;        
+
+        struct QueueFamilyIndices {
+            std::optional<uint32_t> graphicsFamily;
+            std::optional<uint32_t> presentFamily;
+            std::optional<uint32_t> computeFamily;
+
+            bool IsComplete() const {
+                return 
+                    graphicsFamily.has_value() 
+                    && computeFamily.has_value()
+                    && presentFamily.has_value();
+            }
+        };        
 
         /** Determines whether to use Vulkan validation layers. */
         bool enableValidationLayers;
@@ -50,6 +66,21 @@ namespace astu {
 
         /** The physical device to be used. */
         VkPhysicalDevice physicalDevice;
+
+        /** The logical device. */
+        VkDevice logicalDevice;
+
+        /** The vulkan graphics queue of the logical device. */
+        VkQueue graphicsQueue;
+
+        /** The vulkan presentation queue of the logical device. */
+        VkQueue presentQueue;
+
+        /** The vulkan compute queue of the logical device. */
+        VkQueue computeQueue;
+
+        /** Used to present rendered images. */
+        VkSurfaceKHR surface;
 
         /**
          * Debug message callback function.
@@ -82,6 +113,12 @@ namespace astu {
          */
         void LogVulkanExtensions() const;
 
+
+        /**
+         * Emits a log messages describing available Vulkan device extensions.
+         */
+        void LogDeviceExtensions(VkPhysicalDevice device) const;
+
         /**
          * Emits a log messages describing available Vulkan layers.
          */
@@ -100,21 +137,43 @@ namespace astu {
         bool CheckValidationLayers();
 
         /**
+         * Checks whether a physical device supports the required extensions.
+         * 
+         * @param device    the physical device to test
+         */
+        bool CheckDeviceExtensions(VkPhysicalDevice device);
+
+        /**
          * Setup the debug message call back.
          */
         void InitializeDebugMessenger();
 
-
+        /**
+         * Selects the physical Vulkan device to use.
+         */
         void SelectPhysicalDevice();
 
+        /**
+         * Creates the logical Vulkan device.
+         */
+        void CreateLogicalDevice();
+
+        /**
+         * Creates the window surface.
+         */
+        void CreateSurface();
+
+
+        QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const; 
+
         int RatePhysicalDevice(VkPhysicalDevice device) const;
-        void LogPhysicalDevice(VkPhysicalDevice device) const;
-        void LogPhysicalDevice(const VkPhysicalDeviceProperties & deviceProperties) const;
+        void LogPhysicalDevice() const;
         
 
         std::vector<std::string> GetRequiredVulkanExtensions() const;
         std::vector<std::string> GetAvailableVulkanExtensions() const;
         std::vector<std::string> GetAvailableVulkanLayers() const;
+        std::vector<std::string> GetAvailableDeviceExtensions(VkPhysicalDevice device) const;
         std::string MakeCsv(const std::vector<std::string> & names) const;
         std::vector<const char*> MakePointerList(const std::vector<std::string> & names) const;
 
