@@ -8,6 +8,11 @@
 #include "QueueIndexFinder.h"
 #include "LogicalDevice.h"
 
+
+/////////////////////////////////////////////////
+/////// LogicalDevice
+////////////////////////////////////////////////
+
 LogicalDevice::LogicalDevice()
     : logicalDevice(nullptr)
     , graphicsQueue(nullptr)
@@ -26,6 +31,9 @@ LogicalDevice::~LogicalDevice()
 /////////////////////////////////////////////////
 /////// LogicalDeviceBuilder
 /////////////////////////////////////////////////
+
+const float LogicalDeviceBuilder::kQPriority = 1.0f;
+
 
 LogicalDeviceBuilder::LogicalDeviceBuilder()
 {
@@ -130,16 +138,12 @@ std::vector<VkDeviceQueueCreateInfo> LogicalDeviceBuilder::BuildQueueCreateInfos
         qid.GetPresentFamily(), 
         };
 
-
-    // All queues have same priority for now.
-    float queuePriority = 1.0f;
-
     for (uint32_t queueFamily : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
         queueCreateInfo.queueCount = 1;
-        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfo.pQueuePriorities = &kQPriority;
 
         result.push_back(queueCreateInfo);
     }

@@ -3,11 +3,13 @@
 
 #pragma once
 
+// Standard C++ Library includes
 #include <cstdint>
 #include <memory>
 #include <vector>
 #include <string>
 
+// Vulkan includes.
 #include <vulkan/vulkan.h>
 
 // Forward declaration.
@@ -117,6 +119,9 @@ public:
     std::unique_ptr<LogicalDevice> Build(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 private:
+    /** The variable holding the priority for all queues. */
+    const static float kQPriority;
+
     /** The names of the required device extensions. */
     std::vector<std::string> extensionNames;
 
