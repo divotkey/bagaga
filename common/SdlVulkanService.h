@@ -42,19 +42,6 @@ namespace astu {
         /** The name of used device extensions. */
         static const std::vector<const char*> kDeviceExtensions;        
 
-        struct QueueFamilyIndices {
-            std::optional<uint32_t> graphicsFamily;
-            std::optional<uint32_t> presentFamily;
-            std::optional<uint32_t> computeFamily;
-
-            bool IsComplete() const {
-                return 
-                    graphicsFamily.has_value() 
-                    && computeFamily.has_value()
-                    && presentFamily.has_value();
-            }
-        };        
-
         /** Determines whether to use Vulkan validation layers. */
         bool enableValidationLayers;
 
@@ -141,7 +128,7 @@ namespace astu {
          * 
          * @param device    the physical device to test
          */
-        bool CheckDeviceExtensions(VkPhysicalDevice device);
+        bool CheckDeviceExtensions(VkPhysicalDevice device) const;
 
         /**
          * Setup the debug message call back.
@@ -162,9 +149,6 @@ namespace astu {
          * Creates the window surface.
          */
         void CreateSurface();
-
-
-        QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const; 
 
         int RatePhysicalDevice(VkPhysicalDevice device) const;
         void LogPhysicalDevice() const;
