@@ -207,7 +207,7 @@ std::vector<std::string> SdlVulkanService::GetAvailableDeviceExtensions(VkPhysic
     }
 
     std::vector<VkExtensionProperties> extensionProperties(extensionCount);
-    res = vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensionProperties.data());
+    res = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, extensionProperties.data());
     if (res != VK_SUCCESS)
     {
         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, 
