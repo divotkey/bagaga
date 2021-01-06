@@ -1,9 +1,10 @@
+#include <stdexcept>
 #include <EntityService.h>
 #include <Vector2.h>
 #include <iostream>
+
 #include "Pose2D.h"
 #include "CircleCollider.h"
-#include "Polyline.h"
 #include "CollisionDetectionSystem.h"
 
 using namespace astu;
@@ -19,22 +20,21 @@ void CollisionDetectionSystem::OnStartup()
     auto & es = GetSM().GetService<EntityService>();
     entityView = 
         es.GetEntityView(EntityFamily::Create<Pose2D, CircleCollider>());
+
+    collisionEventService = GetSM().FindService<CollisionEventService>();
+    if (!collisionEventService) {
+        throw std::logic_error("Collision detection systems requires collision event service");
+    }
 }
 
 void CollisionDetectionSystem::OnShutdown()
 {
+    collisionEventService = nullptr;
     entityView = nullptr;    
 }
 
 void CollisionDetectionSystem::OnUpdate()
 {
-
-    // Debug start
-    for (auto & e : *entityView) {
-        e->GetComponent<Polyline>().color = WebColors::White;
-    }
-    // Debug end
-
     for (size_t j = 0; j < entityView->size(); ++j) {
         const auto & entityA = (*entityView)[j];
 
@@ -42,9 +42,7 @@ void CollisionDetectionSystem::OnUpdate()
             const auto & entityB = (*entityView)[i];
 
             if (IsColliding(*entityA, *entityB)) {
-                // Report collision.
-                ReportCollision(*entityA, *entityB);
-                // std::cout << "Collision!" << std::endl;
+                ReportCollision(entityA, entityB);
             }
         }
     }
@@ -66,12 +64,7 @@ bool CollisionDetectionSystem::IsColliding(astu::Entity & a, astu::Entity & b)
     return d.LengthSquared() <= radiusSum * radiusSum;
 }
 
-void CollisionDetectionSystem::ReportCollision(astu::Entity & a, astu::Entity & b)
+void CollisionDetectionSystem::ReportCollision(std::shared_ptr<astu::Entity> a, std::shared_ptr<astu::Entity> b)
 {
-    // Debug version.
-    auto & polyA = a.GetComponent<Polyline>();
-    auto & polyB = b.GetComponent<Polyline>();
-
-    polyA.color = WebColors::Red;
-    polyB.color = WebColors::Red;
+    collisionEventService->QueueSignal(CollisionEvent(a, b));
 }

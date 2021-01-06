@@ -22,8 +22,8 @@
 #include "LinearMovement.h"
 #include "CollisionTestService.h"
 
-#define ENTITY_RADIUS 30.0
-#define NUM_ENTITIES 15
+#define ENTITY_RADIUS 15.0
+#define NUM_ENTITIES 50
 
 
 using namespace astu;
@@ -45,6 +45,9 @@ CollisionTestService::CollisionTestService()
 
 void CollisionTestService::OnStartup()
 {
+    // Register as collision listener.
+    GetSM().GetService<CollisionEventService>()
+        .AddListener(shared_as<CollisionListener>());
 
     auto & wm = GetSM().GetService<IWindowManager>();
 
@@ -59,7 +62,9 @@ void CollisionTestService::OnStartup()
 
 void CollisionTestService::OnShutdown()
 {
-    // Intentionally left empty.
+    // De-Register as collision listener.
+    GetSM().GetService<CollisionEventService>()
+        .RemoveListener(shared_as<CollisionListener>());
 }
 
 void CollisionTestService::AddTestEntity(const Vector2<double> & p, double s, const Color & c)
@@ -75,4 +80,14 @@ void CollisionTestService::AddTestEntity(const Vector2<double> & p, double s, co
 
     auto & es = GetSM().GetService<EntityService>();
     es.AddEntity(entity);
+}
+
+
+void CollisionTestService::OnSignal(const CollisionEvent & event)
+{
+    if (GetRandomDouble() >= 0.5) {
+        GetSM().GetService<EntityService>().RemoveEntity(event.entityA);
+    } else {
+        GetSM().GetService<EntityService>().RemoveEntity(event.entityB);
+    }
 }

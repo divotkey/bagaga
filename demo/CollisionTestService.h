@@ -13,15 +13,23 @@
 
 #include <memory>
 #include <Service.h>
+
+#include "CollisionDetectionSystem.h"
 #include "Polyline.h"
 
-class CollisionTestService : public astu::BaseService {
+class CollisionTestService 
+    : public astu::BaseService
+    , public CollisionListener
+{
 public:
 
     /**
      * Constructor.
      */
     CollisionTestService();
+
+    // Inherited via CollisionListener
+    virtual void OnSignal(const CollisionEvent & event) override;       
 
 protected:
 
