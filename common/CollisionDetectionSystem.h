@@ -11,10 +11,6 @@ public:
     std::shared_ptr<astu::Entity> entityA;
     std::shared_ptr<astu::Entity> entityB;
 
-    CollisionEvent() {
-        // Intentionally left empty.
-    }
-
     CollisionEvent(std::shared_ptr<astu::Entity> a, std::shared_ptr<astu::Entity> b)
         : entityA(a), entityB(b)
     {
