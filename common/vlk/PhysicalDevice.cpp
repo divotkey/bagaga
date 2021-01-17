@@ -155,7 +155,7 @@ vector<VkPresentModeKHR> PhysicalDevice::GetPresentModes(VkSurfaceKHR surface) c
             + to_string(res));
     }
 
-    vector<VkPresentModeKHR> modes;
+    vector<VkPresentModeKHR> modes(presentModeCount);
     res = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, modes.data());
 
     if (res != VK_SUCCESS)

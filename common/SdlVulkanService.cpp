@@ -163,11 +163,13 @@ void SdlVulkanService::SelectPhysicalDevice()
     std::multimap<int, PhysicalDevice> candidates;
     for (const auto & device : devices) {
         int score = RatePhysicalDevice(device);
-        candidates.insert(std::make_pair(score, device));
+        if (score > 0) {
+            candidates.insert(std::make_pair(score, device));
+        }
     }
 
     if (candidates.empty()) {
-        throw std::runtime_error("No physical Vulkan device found");
+        throw std::runtime_error("No suitable physical Vulkan device found");
     }
 
     physicalDevice = std::make_unique<PhysicalDevice>(candidates.rbegin()->second);
@@ -212,6 +214,14 @@ int SdlVulkanService::RatePhysicalDevice(const PhysicalDevice & device) const
 
     if (!QueueIndexFinder(device, surface).HasAllFamilies())
     {
+        return 0;
+    }
+
+    if (device.GetSurfaceFormats(surface).empty()) {
+        return 0;
+    }
+
+    if (device.GetPresentModes(surface).empty()) {
         return 0;
     }
 
