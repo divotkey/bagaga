@@ -1,12 +1,14 @@
 // Experimental Vulkan-Integration (EVI)
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
+#pragma once
+
 // Standard C++ Library includes
 #include <vector>
 #include <string>
 #include <set>
 
-// Vulkan includes.
+// Vulkan includes
 #include <vulkan/vulkan.h>
 
 /**
@@ -36,7 +38,7 @@ public:
      * 
      * @return the device handle
      */
-    VkPhysicalDevice GetHandle() const {
+    const VkPhysicalDevice GetHandle() const {
         return device;
     }
 
@@ -132,15 +134,6 @@ public:
     }
 
     /**
-     * Returns maximum image dimension created with VK_IMAGE_TYPE_2D.
-     * 
-     * @return the maximum image dimension
-     */
-    uint32_t GetMaxImageDimension2D() const {
-        return GetLimits().maxImageDimension2D;
-    }
-
-    /**
      * Returns whether this physicsl device is a discrete GPU.
      * 
      * If this device is a discrete GPU it is typically a separate processor
@@ -150,6 +143,15 @@ public:
      */
     bool IsDiscreteGPU() const {
         return GetDeviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+    }
+
+    /**
+     * Returns maximum image dimension created with VK_IMAGE_TYPE_2D.
+     * 
+     * @return the maximum image dimension
+     */
+    uint32_t GetMaxImageDimension2D() const {
+        return GetLimits().maxImageDimension2D;
     }
 
     /**
@@ -175,6 +177,13 @@ public:
      */
     const VkPhysicalDeviceLimits & GetLimits() const {
         return GetProperties().limits;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkPhysicalDevice() const { 
+        return GetHandle();
     }
 
 private:

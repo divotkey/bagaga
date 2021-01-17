@@ -1,13 +1,16 @@
 // Experimental Vulkan-Integration (EVI)
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
+// C++ Standard Library includes
 #include <stdexcept>
 #include <algorithm>
 #include <set>
 
+// Local includes
 #include "QueueIndexFinder.h"
 #include "LogicalDevice.h"
 
+using namespace std;
 
 /////////////////////////////////////////////////
 /////// LogicalDevice
@@ -40,51 +43,88 @@ LogicalDeviceBuilder::LogicalDeviceBuilder()
     Reset();
 }
 
-LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceExtension(const std::string & name)
+LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceExtension(const string & name)
 {
     if (HasDeviceExtension(name)) {
-        throw std::logic_error("Device extensions already added" + name);
+        throw logic_error("Device extensions already added" + name);
     }
 
-    extensionNames.push_back(name);
+    extensionNames.AddName(name);
     return *this;
 }
 
-bool LogicalDeviceBuilder::HasDeviceExtension(const std::string & name) const
+LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceExtensions(const vector<string> & extensionNames)
 {
-    return std::find(extensionNames.begin(), extensionNames.end(), name) != extensionNames.end();
+    for (const auto & extensionName : extensionNames) {
+        AddDeviceExtension(extensionName);
+    }
+
+    return *this;
 }
 
-LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceLayer(const std::string & name)
+LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceExtensions(const vector<const char *> & extensionNames)
+{
+    for (const auto & extensionName : extensionNames) {
+        AddDeviceExtension(extensionName);
+    }
+
+    return *this;
+}
+
+
+bool LogicalDeviceBuilder::HasDeviceExtension(const string & name) const
+{
+    return extensionNames.HasName(name);
+}
+
+LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceLayer(const string & name)
 {
     if (HasDeviceLayer(name)) {
-        throw std::logic_error("Device extensions already added" + name);
+        throw logic_error("Device extensions already added" + name);
     }
 
-    layerNames.push_back(name);
+    layerNames.AddName(name);
     return *this;
 }
 
-bool LogicalDeviceBuilder::HasDeviceLayer(const std::string & name) const
+LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceLayers(const vector<string> & layerNames)
 {
-    return std::find(layerNames.begin(), layerNames.end(), name) != layerNames.end();
+    for (const auto & layerName : layerNames) {
+        AddDeviceLayer(layerName);
+    }
+
+    return *this;
+}
+
+LogicalDeviceBuilder & LogicalDeviceBuilder::AddDeviceLayers(const vector<const char *> & layerNames)
+{
+    for (const auto & layerName : layerNames) {
+        AddDeviceLayer(layerName);
+    }
+
+    return *this;
+}
+
+
+bool LogicalDeviceBuilder::HasDeviceLayer(const string & name) const
+{
+    return layerNames.HasName(name);
 }
 
 LogicalDeviceBuilder & LogicalDeviceBuilder::Reset()
 {
-    extensionNames.clear();
-    layerNames.clear();
+    extensionNames.Clear();
+    layerNames.Clear();
     return *this;
 }
 
-std::unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, VkSurfaceKHR surface)
+unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 
     QueueIndexFinder queueIndexFinder(device, surface);
     
     auto queueCreateInfos = BuildQueueCreateInfos(queueIndexFinder);
     auto deviceFeatures =  BuildDeviceFeatures();
-    auto deviceExtensions = GetPointers(extensionNames);
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO; 
@@ -92,15 +132,20 @@ std::unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice devi
     createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+    // Add requested device extensions.
+    createInfo.enabledExtensionCount = extensionNames.NumNames();
+    createInfo.ppEnabledExtensionNames = extensionNames.GetPointerArray();
 
-    auto result = std::unique_ptr<LogicalDevice>(new LogicalDevice());
+    // Device layers are deprecated, just to be on the safe side.
+    createInfo.enabledLayerCount = layerNames.NumNames();
+    createInfo.ppEnabledLayerNames = layerNames.GetPointerArray();
+
+    auto result = unique_ptr<LogicalDevice>(new LogicalDevice());
     
     VkResult res = vkCreateDevice(device, &createInfo, nullptr, &result->logicalDevice);
     if (res != VK_SUCCESS) {
-        throw std::runtime_error("Failed to create logical Vulkan device, error code" 
-            + std::to_string(res));
+        throw runtime_error("Failed to create logical Vulkan device, error code" 
+            + to_string(res));
     }
 
     // Fetch graphics queue.
@@ -127,12 +172,12 @@ std::unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice devi
     return result;
 }
 
-std::vector<VkDeviceQueueCreateInfo> LogicalDeviceBuilder::BuildQueueCreateInfos(const QueueIndexFinder & qid)
+vector<VkDeviceQueueCreateInfo> LogicalDeviceBuilder::BuildQueueCreateInfos(const QueueIndexFinder & qid)
 {
-    std::vector<VkDeviceQueueCreateInfo> result;
+    vector<VkDeviceQueueCreateInfo> result;
 
-    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {
+    vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    set<uint32_t> uniqueQueueFamilies = {
         qid.GetGraphicsFamily(), 
         qid.GetComputeFamily(), 
         qid.GetPresentFamily(), 
@@ -158,15 +203,4 @@ VkPhysicalDeviceFeatures LogicalDeviceBuilder::BuildDeviceFeatures()
     // TODO add devices features (not needed right now).
 
     return deviceFeatures;
-}
-
-
-std::vector<const char*> LogicalDeviceBuilder::GetPointers(const std::vector<std::string> & names) const
-{
-    std::vector<const char*> result;
-
-    for (const auto & name : names) {
-        result.push_back(name.data());
-    }
-    return result;
 }

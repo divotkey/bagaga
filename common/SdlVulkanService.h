@@ -8,12 +8,18 @@
 #include <string>
 #include <vector>
 
+// Vulkan SDK includes
 #include <vulkan/vulkan.h>
 
+// AST Utilities Library includes
 #include <UpdateService.h>
+
+// Local includes
+#include "vlk/PhysicalDevice.h"
 
 // Forward declaration.
 class LogicalDevice;
+class VulkanInstance;
 
 class SdlVulkanService : public astu::UpdatableBaseService {
 public:
@@ -27,7 +33,6 @@ public:
      * @param priority  the priority used to update this service
      */
     SdlVulkanService(bool debug = false, int priority = 0);
-
 
     /**
      * Virtual destructor.
@@ -55,31 +60,20 @@ private:
     bool enableValidationLayers;
 
     /** The Vulkan instance. */
-    VkInstance vkInstance;
+    std::unique_ptr<VulkanInstance> instance;
+
+    /** Represents the logical Vulkan device. */
+    std::unique_ptr<LogicalDevice> logicalDevice;
 
     /** Used to receive debug messages from Vulkan validation layer. */
     VkDebugUtilsMessengerEXT debugMessenger;
 
     /** The physical device to be used. */
-    VkPhysicalDevice physicalDevice;
+    std::unique_ptr<PhysicalDevice> physicalDevice;
 
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
 
-    /** Represents the logical Vulkan device. */
-    std::unique_ptr<LogicalDevice> logicalDevice;
-
-    // /** The logical device. */
-    // VkDevice logicalDevice;
-
-    // /** The vulkan graphics queue of the logical device. */
-    // VkQueue graphicsQueue;
-
-    // /** The vulkan presentation queue of the logical device. */
-    // VkQueue presentQueue;
-
-    // /** The vulkan compute queue of the logical device. */
-    // VkQueue computeQueue;
 
     /**
      * Debug message callback function.
@@ -103,44 +97,9 @@ private:
     void Cleanup();
 
     /**
-     * Emits a log messages describing the Vulkan version.
-     */
-    void LogVulkanInstanceVersion() const;
-
-    /**
-     * Emits a log messages describing available Vulkan extensions.
-     */
-    void LogVulkanExtensions() const;
-
-
-    /**
-     * Emits a log messages describing available Vulkan device extensions.
-     */
-    void LogDeviceExtensions(VkPhysicalDevice device) const;
-
-    /**
-     * Emits a log messages describing available Vulkan layers.
-     */
-    void LogVulkanLayers() const;
-
-    /**
      * Creates the Vulkan instance.
      */
     void CreateVulkanInstance();
-
-    /**
-     * Checks whether validation layers are available.
-     *
-     * @return `true` if validation layers are available
-     */
-    bool CheckValidationLayers();
-
-    /**
-     * Checks whether a physical device supports the required extensions.
-     *
-     * @param device    the physical device to test
-     */
-    bool CheckDeviceExtensions(VkPhysicalDevice device) const;
 
     /**
      * Setup the debug message call back.
@@ -162,18 +121,24 @@ private:
      */
     void CreateSurface();
 
-    int RatePhysicalDevice(VkPhysicalDevice device) const;
-    void LogPhysicalDevice() const;
+    /**
+     * Rates a physical device.
+     * 
+     * Better suited devices get a higher score.
+     * 
+     * @param device    the device to rate
+     * @return the score the device has achieve
+     */
+    int RatePhysicalDevice(const PhysicalDevice & device) const;
 
-
+    /**
+     * Retrieves the required Vulkan extentions from SDL.
+     * 
+     * @return the required Vulkan extensions
+     */
     std::vector<std::string> GetRequiredVulkanExtensions() const;
-    std::vector<std::string> GetAvailableVulkanExtensions() const;
-    std::vector<std::string> GetAvailableVulkanLayers() const;
-    std::vector<std::string> GetAvailableDeviceExtensions(VkPhysicalDevice device) const;
-    std::string MakeCsv(const std::vector<std::string> & names) const;
-    std::vector<const char*> MakePointerList(const std::vector<std::string> & names) const;
 
-    // Proxy functions (simplified)
+    /////// Proxy functions (simplified) ///////
     void DestroyDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT dbgMsngr);
 
     VkResult CreateDebugUtilsMessengerEXT(

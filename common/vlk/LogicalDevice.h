@@ -12,6 +12,9 @@
 // Vulkan includes.
 #include <vulkan/vulkan.h>
 
+// Local includes
+#include "NameList.h"
+
 // Forward declaration.
 class QueueIndexFinder;
 
@@ -69,7 +72,7 @@ public:
 
 private:
 
-    /** The logical device. */
+    /** The logical device handle. */
     VkDevice logicalDevice;
 
     /** The vulkan graphics queue of this logical device. */
@@ -99,14 +102,86 @@ private:
 class LogicalDeviceBuilder {
 public:
 
+    /**
+     * Constructor.
+     */
     LogicalDeviceBuilder();
 
+    /**
+     * Adds an extension.
+     * 
+     * @param extensionName the name of the extension
+     * @return reference to this builder for method chaining
+     * @throws std::logic_error in case the extension has already been added
+     */
     LogicalDeviceBuilder & AddDeviceExtension(const std::string & name);
+
+    /**
+     * Adds serveral extensions at once.
+     * 
+     * @param extensionNames    the vector with extension names
+     * @return reference to this builder for method chaining
+     * @throws std::logic_error in case the extension has already been added
+     */
+    LogicalDeviceBuilder & AddDeviceExtensions(const std::vector<std::string> & extensionNames);
+
+    /**
+     * Adds serveral extensions at once.
+     * 
+     * @param extensionNames    the vector with extension names
+     * @return reference to this builder for method chaining
+     * @throws std::logic_error in case the extension has already been added
+     */
+    LogicalDeviceBuilder & AddDeviceExtensions(const std::vector<const char *> & extensionNames);
+
+
+    /**
+     * Tests whether the extenions has already been added.
+     * 
+     * @param extensionName the name of the extenions to test
+     * @return `true` in case the extension has already been added
+     */
     bool HasDeviceExtension(const std::string & name) const;
+
+    /**
+     * Adds an layer.
+     * 
+     * @return reference to this builder for method chaining
+     * @throws std::logic_error in case the layer has already been added
+     */
     LogicalDeviceBuilder & AddDeviceLayer(const std::string & name);
+
+    /**
+     * Adds serveral layers at once.
+     * 
+     * @param layerNames    the vector with layer names
+     * @return reference to this builder for method chaining
+     * @throws std::logic_error in case the extension has already been added
+     */
+    LogicalDeviceBuilder & AddDeviceLayers(const std::vector<std::string> & layerNames);
+
+    /**
+     * Adds serveral layers at once.
+     * 
+     * @param layerNames    the vector with layer names
+     * @return reference to this builder for method chaining
+     * @throws std::logic_error in case the extension has already been added
+     */
+    LogicalDeviceBuilder & AddDeviceLayers(const std::vector<const char *> & layerNames);
+
+    /**
+     * Tests whether the layer has already been added.
+     * 
+     * @param extensionName the name of the layer to test
+     * @return `true` in case the layer has already been added
+     */
     bool HasDeviceLayer(const std::string & name) const;
 
-
+    /**
+     * Resets this builder to its initial state.
+     * 
+     * @return reference to this builder for method chaining
+     */
     LogicalDeviceBuilder & Reset();
 
     /**
@@ -123,11 +198,10 @@ private:
     const static float kQPriority;
 
     /** The names of the required device extensions. */
-    std::vector<std::string> extensionNames;
+    NameList extensionNames;
 
     /** The names of the required device layers. */
-    std::vector<std::string> layerNames;
-
+    NameList layerNames;
 
     /**
      * Creates VkDeviceQueueCreateInfo structure based on required queues.
@@ -137,6 +211,4 @@ private:
     std::vector<VkDeviceQueueCreateInfo> BuildQueueCreateInfos(const QueueIndexFinder & qid);
 
     VkPhysicalDeviceFeatures BuildDeviceFeatures();
-    std::vector<const char*> GetPointers(const std::vector<std::string> & names) const;
-
 };

@@ -14,9 +14,12 @@ set(CMAKE_CXX_STANDARD 17)
 # Add executable Target
 # (Target name followed by blank-separated C++ source files, no header files!)
 add_executable(VulkanTest
-        ../common/PhysicalDevice.cpp
-        ../common/QueueIndexFinder.cpp
-        ../common/LogicalDevice.cpp
+        ../common/vlk/NameList.cpp
+        ../common/vlk/QueueIndexFinder.cpp
+        ../common/vlk/VulkanInstance.cpp
+        ../common/vlk/PhysicalDevice.cpp
+        ../common/vlk/LogicalDevice.cpp
+        ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp
         main.cpp 
         )
