@@ -71,6 +71,9 @@ private:
     /** The images of the swap chain. */
     std::vector<VkImage> images;
 
+    /** The view to the swap chain images. */
+    std::vector<VkImageView> imageViews;
+
     /** The image format of this swap chain. */
     VkFormat imageFormat;
 
@@ -82,8 +85,12 @@ private:
      * 
      * @param handle    the swap chain handle
      * @param device    the physical device this swap chain belongs to
+     * @param format    the image format of this swap chain
+     * @param extent    the resolution of the swap chain images
      */
-    SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device);
+    SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent);
+
+    VkImageView CreateImageView(const LogicalDevice& device, const VkImage & image) const;
 
     friend class SwapChainBuilder;
 };

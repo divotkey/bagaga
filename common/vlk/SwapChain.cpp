@@ -19,9 +19,11 @@ using namespace std;
 /////// SwapChain
 /////////////////////////////////////////////////
 
-SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device)
+SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent)
     : swapChain(handle)
     , device(device)
+    , imageFormat(format)
+    , extent(extent)
 {
     assert(device);
 
@@ -40,6 +42,31 @@ SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> devic
         throw runtime_error("Failed to query images of swap chain, error code" 
             + to_string(res));
     }
+
+    // Create image views.
+    for (const auto & image : images) {
+        imageViews.push_back( CreateImageView(*device, image) );
+    }
+
+    // for (size_t i = 0; i < images.size(); ++i) {
+    //     VkImageViewCreateInfo createInfo{};
+    //     createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    //     createInfo.image = images[i];     
+    //     createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    //     createInfo.format = GetImageFormat();
+    //     createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    //     createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    //     createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    //     createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;  
+
+    //     createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    //     createInfo.subresourceRange.baseMipLevel = 0;
+    //     createInfo.subresourceRange.levelCount = 1;
+    //     createInfo.subresourceRange.baseArrayLayer = 0;
+    //     createInfo.subresourceRange.layerCount = 1;              
+
+    //     res = vkCreateImageView(device, &createInfo, nullptr, &imageViews[i])        
+    // }
 }
 
 SwapChain::~SwapChain()
@@ -49,6 +76,36 @@ SwapChain::~SwapChain()
         vkDestroySwapchainKHR(*pDevice, swapChain, nullptr);
     }
 }
+
+VkImageView SwapChain::CreateImageView(const LogicalDevice& device, const VkImage& image) const
+{
+    VkImageViewCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    createInfo.image = image;     
+    createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    createInfo.format = GetImageFormat();
+    createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;  
+
+    createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    createInfo.subresourceRange.baseMipLevel = 0;
+    createInfo.subresourceRange.levelCount = 1;
+    createInfo.subresourceRange.baseArrayLayer = 0;
+    createInfo.subresourceRange.layerCount = 1;   
+
+    VkImageView view;
+    VkResult res = vkCreateImageView(device, &createInfo, nullptr, &view);
+
+    if (res != VK_SUCCESS) {
+        throw runtime_error("Failed to create image view, error code" 
+            + to_string(res));
+    }
+
+    return view;                  
+}
+
 
 /////////////////////////////////////////////////
 /////// SwapChainBuilder
@@ -225,9 +282,5 @@ unique_ptr<SwapChain> SwapChainBuilder::Build(const std::shared_ptr<LogicalDevic
             + to_string(res));
     }
 
-    auto result = std::unique_ptr<SwapChain>(new SwapChain(handle, device));
-    result->imageFormat = imageFormat;
-    result->extent = extent;
-
-    return result;
+    return unique_ptr<SwapChain>(new SwapChain(handle, device, imageFormat, extent));
 }
