@@ -30,6 +30,11 @@ LogicalDevice::~LogicalDevice()
     vkDestroyDevice(logicalDevice, nullptr);
 }
 
+bool LogicalDevice::IsGraphicsAndPresentQueueIdentical() const
+{
+    return presentQueueIdx == graphicsQueueIdx;
+}
+
 
 /////////////////////////////////////////////////
 /////// LogicalDeviceBuilder
@@ -168,6 +173,11 @@ unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, V
         queueIndexFinder.GetComputeFamily(), 
         0, 
         &result->computeQueue);
+
+
+    result->graphicsQueueIdx = queueIndexFinder.GetGraphicsFamily();
+    result->presentQueueIdx = queueIndexFinder.GetPresentFamily();
+    result->computeQueueIdx = queueIndexFinder.GetComputeFamily();
 
     return result;
 }

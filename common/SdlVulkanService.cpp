@@ -21,6 +21,7 @@
 #include "vlk/VulkanInstance.h"
 #include "vlk/QueueIndexFinder.h"
 #include "vlk/LogicalDevice.h"
+#include "vlk/SwapChain.h"
 
 using namespace astu;
 
@@ -63,6 +64,7 @@ void SdlVulkanService::OnStartup()
         SelectPhysicalDevice();
         // SdlVulkanLogger::LogDeviceExtensions(*physicalDevice);
         CreateLogicalDevice();
+        CreateSwapChain();        
     } catch (...) {
         Cleanup();
         throw;
@@ -82,6 +84,10 @@ void SdlVulkanService::OnUpdate()
 
 void SdlVulkanService::Cleanup()
 {
+    if (swapChain) {
+        swapChain = nullptr;
+    }
+
     if (logicalDevice) {
         logicalDevice = nullptr;
     }
@@ -191,6 +197,25 @@ void SdlVulkanService::CreateLogicalDevice()
     builder.AddDeviceLayers(kValidationLayers);
     logicalDevice = builder.Build(*physicalDevice, surface);
 }
+
+void SdlVulkanService::CreateSwapChain()
+{
+    assert(physicalDevice);
+    assert(logicalDevice);
+    assert(surface);
+
+    auto sdlWindow = ServiceManager::GetInstance().GetService<SdlVideoService>().GetSdlWindow();
+    int width;
+    int height;
+    SDL_Vulkan_GetDrawableSize(sdlWindow, &width, &height);
+
+    SwapChainBuilder builder;
+    builder.ChooseConfiguration(*physicalDevice, surface, width, height);
+
+    swapChain = builder.Build(logicalDevice, surface);
+    // SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created swap chain");
+}
+
 
 void SdlVulkanService::CreateSurface() 
 {

@@ -18,8 +18,9 @@
 #include "vlk/PhysicalDevice.h"
 
 // Forward declaration.
-class LogicalDevice;
 class VulkanInstance;
+class LogicalDevice;
+class SwapChain;
 
 class SdlVulkanService : public astu::UpdatableBaseService {
 public:
@@ -63,13 +64,16 @@ private:
     std::unique_ptr<VulkanInstance> instance;
 
     /** Represents the logical Vulkan device. */
-    std::unique_ptr<LogicalDevice> logicalDevice;
+    std::shared_ptr<LogicalDevice> logicalDevice;
 
     /** Used to receive debug messages from Vulkan validation layer. */
     VkDebugUtilsMessengerEXT debugMessenger;
 
     /** The physical device to be used. */
     std::unique_ptr<PhysicalDevice> physicalDevice;
+
+    /** The swap chain used to present the rendered images. */
+    std::unique_ptr<SwapChain> swapChain;
 
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
@@ -115,6 +119,11 @@ private:
      * Creates the logical Vulkan device.
      */
     void CreateLogicalDevice();
+
+    /**
+     * Creates the swap chain.
+     */
+    void CreateSwapChain();
 
     /**
      * Creates the window surface.

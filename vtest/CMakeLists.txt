@@ -19,6 +19,7 @@ add_executable(VulkanTest
         ../common/vlk/VulkanInstance.cpp
         ../common/vlk/PhysicalDevice.cpp
         ../common/vlk/LogicalDevice.cpp
+        ../common/vlk/SwapChain.cpp
         ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp
         main.cpp 

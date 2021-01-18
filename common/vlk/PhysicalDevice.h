@@ -38,7 +38,7 @@ public:
      * 
      * @return the device handle
      */
-    const VkPhysicalDevice GetHandle() const {
+    VkPhysicalDevice GetHandle() const {
         return device;
     }
 
