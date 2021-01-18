@@ -23,7 +23,23 @@ SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> devic
     : swapChain(handle)
     , device(device)
 {
-    // Intentionally left empty.
+    assert(device);
+
+    uint32_t imageCount;
+    VkResult res = vkGetSwapchainImagesKHR(*device, swapChain, &imageCount, nullptr);
+    if (res != VK_SUCCESS) {
+        throw runtime_error("Failed to query image count of swap chain, error code" 
+            + to_string(res));
+    }
+
+    images.resize(imageCount);
+
+    res = vkGetSwapchainImagesKHR(*device, swapChain, &imageCount, images.data());
+
+    if (res != VK_SUCCESS) {
+        throw runtime_error("Failed to query images of swap chain, error code" 
+            + to_string(res));
+    }
 }
 
 SwapChain::~SwapChain()
@@ -209,5 +225,9 @@ unique_ptr<SwapChain> SwapChainBuilder::Build(const std::shared_ptr<LogicalDevic
             + to_string(res));
     }
 
-    return std::unique_ptr<SwapChain>(new SwapChain(handle, device));
+    auto result = std::unique_ptr<SwapChain>(new SwapChain(handle, device));
+    result->imageFormat = imageFormat;
+    result->extent = extent;
+
+    return result;
 }

@@ -14,6 +14,9 @@
 class PhysicalDevice;
 class LogicalDevice;
 
+/**
+ * Wraps a Vulkan swap chain.
+ */
 class SwapChain final {
 public:
 
@@ -21,6 +24,42 @@ public:
      * Destructor.
      */
     ~SwapChain();
+
+    /**
+     * Returns the image format of this swap chain.
+     * 
+     * @return the image format
+     */
+    const VkFormat & GetImageFormat() const {
+        return imageFormat;
+    }
+
+    /**
+     * Returns the image resolution of this swap chain
+     * 
+     * @return the image resolution in pixels
+     */
+    const VkExtent2D & GetExtent() const {
+        return extent;
+    }
+
+    /**
+     * Returns the image width of this swap chain.
+     * 
+     * @return image width in pixels
+     */
+    uint32_t GetImageWidth() const {
+        return GetExtent().width;
+    }
+
+    /**
+     * Returns the image height of this swap chain.
+     * 
+     * @return height width in pixels
+     */
+    uint32_t GetImageHeight() const {
+        return GetExtent().height;
+    }
     
 private:
     /** The handle of the swap chain. */
@@ -29,6 +68,15 @@ private:
     /** The logical device this swap chain belongs to. */
     std::weak_ptr<LogicalDevice> device;
 
+    /** The images of the swap chain. */
+    std::vector<VkImage> images;
+
+    /** The image format of this swap chain. */
+    VkFormat imageFormat;
+
+    /** The resolution of the swap chain images. */
+    VkExtent2D extent;
+    
     /**
      * Constructor.
      * 
