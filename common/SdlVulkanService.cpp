@@ -14,7 +14,6 @@
 // Astu includes
 #include <VersionInfo.h>
 #include <SdlVideoService.h>
-#include <SdlVulkanService.h>
 
 // Local includes
 #include "vlk/SdlVulkanLogger.h"
@@ -22,6 +21,8 @@
 #include "vlk/QueueIndexFinder.h"
 #include "vlk/LogicalDevice.h"
 #include "vlk/SwapChain.h"
+#include "vlk/RenderPass.h"
+#include "SdlVulkanService.h"
 
 using namespace astu;
 
@@ -64,7 +65,8 @@ void SdlVulkanService::OnStartup()
         SelectPhysicalDevice();
         // SdlVulkanLogger::LogDeviceExtensions(*physicalDevice);
         CreateLogicalDevice();
-        CreateSwapChain();        
+        CreateSwapChain();    
+        CreateRenderPass();    
     } catch (...) {
         Cleanup();
         throw;
@@ -84,6 +86,10 @@ void SdlVulkanService::OnUpdate()
 
 void SdlVulkanService::Cleanup()
 {
+    if (renderPass) {
+        renderPass = nullptr;
+    }
+
     if (swapChain) {
         swapChain = nullptr;
     }
@@ -213,9 +219,20 @@ void SdlVulkanService::CreateSwapChain()
     builder.ChooseConfiguration(*physicalDevice, surface, width, height);
 
     swapChain = builder.Build(logicalDevice, surface);
-    // SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created swap chain");
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created swap chain");
 }
 
+void SdlVulkanService::CreateRenderPass()
+{
+    assert(logicalDevice);
+    assert(swapChain);
+
+    renderPass = RenderPassBuilder()
+        .CooseColorAttachmentFormat(*swapChain)        
+        .Build(logicalDevice);
+
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created render pass object");
+}
 
 void SdlVulkanService::CreateSurface() 
 {

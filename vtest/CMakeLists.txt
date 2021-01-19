@@ -20,6 +20,12 @@ add_executable(VulkanTest
         ../common/vlk/PhysicalDevice.cpp
         ../common/vlk/LogicalDevice.cpp
         ../common/vlk/SwapChain.cpp
+        ../common/vlk/RenderPass.cpp
+        ../common/vlk/VertexInputInfo.cpp
+        ../common/vlk/InputAssembly.cpp
+        ../common/vlk/ViewportState.cpp
+        ../common/vlk/Rasterizer.cpp
+        ../common/vlk/GraphicsPipeline.cpp
         ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp
         main.cpp 

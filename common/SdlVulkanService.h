@@ -21,6 +21,7 @@
 class VulkanInstance;
 class LogicalDevice;
 class SwapChain;
+class RenderPass;
 
 class SdlVulkanService : public astu::UpdatableBaseService {
 public:
@@ -75,6 +76,9 @@ private:
     /** The swap chain used to present the rendered images. */
     std::unique_ptr<SwapChain> swapChain;
 
+    /** The render pass object. */
+    std::unique_ptr<RenderPass> renderPass;
+
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
 
@@ -124,6 +128,11 @@ private:
      * Creates the swap chain.
      */
     void CreateSwapChain();
+
+    /**
+     * Creates the render pass object.
+     */
+    void CreateRenderPass();    
 
     /**
      * Creates the window surface.

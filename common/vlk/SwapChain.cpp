@@ -19,13 +19,14 @@ using namespace std;
 /////// SwapChain
 /////////////////////////////////////////////////
 
-SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent)
+SwapChain::SwapChain(VkSwapchainKHR handle, shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent)
     : swapChain(handle)
     , device(device)
     , imageFormat(format)
     , extent(extent)
 {
     assert(device);
+    assert(handle);
 
     uint32_t imageCount;
     VkResult res = vkGetSwapchainImagesKHR(*device, swapChain, &imageCount, nullptr);
@@ -45,7 +46,7 @@ SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> devic
 
     // Create image views.
     for (const auto & image : images) {
-        imageViews.push_back( CreateImageView(*device, image) );
+        imageViews.push_back( CreateImageView(image) );
     }
 
     // for (size_t i = 0; i < images.size(); ++i) {
@@ -71,13 +72,12 @@ SwapChain::SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> devic
 
 SwapChain::~SwapChain()
 {
-    std::shared_ptr<LogicalDevice> pDevice = device.lock();
-    if (pDevice) {
-        vkDestroySwapchainKHR(*pDevice, swapChain, nullptr);
+    if (swapChain && device) {
+        vkDestroySwapchainKHR(*device, swapChain, nullptr);
     }
 }
 
-VkImageView SwapChain::CreateImageView(const LogicalDevice& device, const VkImage& image) const
+VkImageView SwapChain::CreateImageView(const VkImage& image) const
 {
     VkImageViewCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -96,7 +96,7 @@ VkImageView SwapChain::CreateImageView(const LogicalDevice& device, const VkImag
     createInfo.subresourceRange.layerCount = 1;   
 
     VkImageView view;
-    VkResult res = vkCreateImageView(device, &createInfo, nullptr, &view);
+    VkResult res = vkCreateImageView(*device, &createInfo, nullptr, &view);
 
     if (res != VK_SUCCESS) {
         throw runtime_error("Failed to create image view, error code" 
@@ -240,7 +240,7 @@ SwapChainBuilder & SwapChainBuilder::Reset()
     return *this;
 }
 
-unique_ptr<SwapChain> SwapChainBuilder::Build(const std::shared_ptr<LogicalDevice> device, VkSurfaceKHR surface)
+unique_ptr<SwapChain> SwapChainBuilder::Build(shared_ptr<LogicalDevice> device, VkSurfaceKHR surface)
 {
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -282,5 +282,5 @@ unique_ptr<SwapChain> SwapChainBuilder::Build(const std::shared_ptr<LogicalDevic
             + to_string(res));
     }
 
-    return unique_ptr<SwapChain>(new SwapChain(handle, device, imageFormat, extent));
+    return make_unique<SwapChain>(handle, device, imageFormat, extent);
 }

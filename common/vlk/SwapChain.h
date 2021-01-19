@@ -5,10 +5,10 @@
 
 // Standard C++ Library includes
 #include <memory>
+#include <vector>
 
 // Vulkan includes
 #include <vulkan/vulkan.h>
-
 
 // Forward declaration
 class PhysicalDevice;
@@ -19,6 +19,16 @@ class LogicalDevice;
  */
 class SwapChain final {
 public:
+
+    /**
+     * Constructor.
+     * 
+     * @param handle    the swap chain handle
+     * @param device    the physical device this swap chain belongs to
+     * @param format    the image format of this swap chain
+     * @param extent    the resolution of the swap chain images
+     */
+    SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent);
 
     /**
      * Destructor.
@@ -66,7 +76,7 @@ private:
     VkSwapchainKHR swapChain;
 
     /** The logical device this swap chain belongs to. */
-    std::weak_ptr<LogicalDevice> device;
+    std::shared_ptr<LogicalDevice> device;
 
     /** The images of the swap chain. */
     std::vector<VkImage> images;
@@ -81,16 +91,11 @@ private:
     VkExtent2D extent;
     
     /**
-     * Constructor.
+     * Creates an image view of an image.
      * 
-     * @param handle    the swap chain handle
-     * @param device    the physical device this swap chain belongs to
-     * @param format    the image format of this swap chain
-     * @param extent    the resolution of the swap chain images
+     * @param image     the handle to the image
      */
-    SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent);
-
-    VkImageView CreateImageView(const LogicalDevice& device, const VkImage & image) const;
+    VkImageView CreateImageView(const VkImage & image) const;
 
     friend class SwapChainBuilder;
 };
@@ -254,7 +259,7 @@ public:
      * @return the newly created swap chain
      * @throws std::runtime_error in case the swap chain could not be created
      */
-    std::unique_ptr<SwapChain> Build(const std::shared_ptr<LogicalDevice> device, VkSurfaceKHR surface);
+    std::unique_ptr<SwapChain> Build(std::shared_ptr<LogicalDevice> device, VkSurfaceKHR surface);
 
 private:
     /** The image format used of the swap chain. */
