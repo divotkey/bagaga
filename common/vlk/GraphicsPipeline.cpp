@@ -1,7 +1,7 @@
 // Experimental Vulkan-Integration (EVI)
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <cassert>
 
 // Local includes
@@ -55,7 +55,7 @@ GraphicsPipelineBuilder & GraphicsPipelineBuilder::InputAssembly(const VkPipelin
     return *this;
 }
 
-std::unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(std::shared_ptr<LogicalDevice> device)
+std::unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(std::shared_ptr<LogicalDevice> device) const
 {
     ValidateConfiguration();
 
@@ -68,7 +68,7 @@ std::unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(std::shared_ptr
     return nullptr;
 }
 
-void GraphicsPipelineBuilder::ValidateConfiguration()
+void GraphicsPipelineBuilder::ValidateConfiguration() const
 {
     if (!vertexInputInfo.has_value()) {
         throw std::logic_error("Unable to build graphics pipeline, vertex input info not specified");

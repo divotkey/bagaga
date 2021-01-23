@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <memory>
 #include <optional>
 		
@@ -61,7 +61,7 @@ public:
     GraphicsPipelineBuilder & VertexInputInfo(const VkPipelineVertexInputStateCreateInfo & info);
     GraphicsPipelineBuilder & InputAssembly(const VkPipelineInputAssemblyStateCreateInfo & assembly);
 
-    std::unique_ptr<GraphicsPipeline> Build(std::shared_ptr<LogicalDevice> device);
+    std::unique_ptr<GraphicsPipeline> Build(std::shared_ptr<LogicalDevice> device) const;
 
 private:
     /** Describes the format of the vertex data that will be passed to the vertex shader. */
@@ -75,5 +75,5 @@ private:
      * 
      * @throws std::logic_error in case the configuration is incomplete or invalid
      */
-    void ValidateConfiguration();
+    void ValidateConfiguration() const;
 };

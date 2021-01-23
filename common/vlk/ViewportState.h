@@ -135,7 +135,7 @@ public:
      * @return the viewport state structure
      * @throws std::logic_error in case the current configuration is invalid
      */
-    VkPipelineViewportStateCreateInfo Build();
+    VkPipelineViewportStateCreateInfo Build() const;
 
 private:
     /** The minimum value for the depth of the framebuffer. */
@@ -162,5 +162,5 @@ private:
      * 
      * @throws std::logic_error in case the configuration is incomplete or invalid
      */
-    void ValidateConfiguration();
+    void ValidateConfiguration() const;
 };

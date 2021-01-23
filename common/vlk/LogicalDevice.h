@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -248,7 +248,7 @@ public:
      * @param surface   the window surface
      * @return the newly created logical device
      */
-    std::unique_ptr<LogicalDevice> Build(VkPhysicalDevice device, VkSurfaceKHR surface);
+    std::unique_ptr<LogicalDevice> Build(VkPhysicalDevice device, VkSurfaceKHR surface) const;
 
 private:
     /** The variable holding the priority for all queues. */
@@ -265,7 +265,7 @@ private:
      * 
      * @return vector with create info structures
      */
-    std::vector<VkDeviceQueueCreateInfo> BuildQueueCreateInfos(const QueueIndexFinder & qid);
+    std::vector<VkDeviceQueueCreateInfo> BuildQueueCreateInfos(const QueueIndexFinder & qid) const;
 
-    VkPhysicalDeviceFeatures BuildDeviceFeatures();
+    VkPhysicalDeviceFeatures BuildDeviceFeatures() const;
 };

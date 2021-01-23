@@ -1,7 +1,7 @@
 // Experimental Vulkan-Integration (EVI)
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <stdexcept>
 #include <cassert>
 #include <string>
@@ -90,7 +90,7 @@ ViewportStateBuilder & ViewportStateBuilder::Reset()
     return *this;
 }
 
-VkPipelineViewportStateCreateInfo ViewportStateBuilder::Build()
+VkPipelineViewportStateCreateInfo ViewportStateBuilder::Build() const
 {
     ValidateConfiguration();
 
@@ -118,7 +118,7 @@ VkPipelineViewportStateCreateInfo ViewportStateBuilder::Build()
     return viewportState;
 }
 
-void ViewportStateBuilder::ValidateConfiguration()
+void ViewportStateBuilder::ValidateConfiguration() const
 {
     if (width <= 0) {
         throw std::logic_error("Width of viewport must be greater zero");

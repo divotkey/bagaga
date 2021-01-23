@@ -9,7 +9,7 @@
  * Copyright 2020 Bagaga Development Team. All rights reserved.                                             
  */
 
-// Standard C++ Libryry
+// C++ Standard Library includes
 #include <iostream>
 #include <string>
 

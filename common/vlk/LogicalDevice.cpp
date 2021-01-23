@@ -123,7 +123,7 @@ LogicalDeviceBuilder & LogicalDeviceBuilder::Reset()
     return *this;
 }
 
-unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, VkSurfaceKHR surface)
+unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, VkSurfaceKHR surface) const
 {
 
     QueueIndexFinder queueIndexFinder(device, surface);
@@ -182,7 +182,7 @@ unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, V
     return result;
 }
 
-vector<VkDeviceQueueCreateInfo> LogicalDeviceBuilder::BuildQueueCreateInfos(const QueueIndexFinder & qid)
+vector<VkDeviceQueueCreateInfo> LogicalDeviceBuilder::BuildQueueCreateInfos(const QueueIndexFinder & qid) const
 {
     vector<VkDeviceQueueCreateInfo> result;
 
@@ -206,7 +206,7 @@ vector<VkDeviceQueueCreateInfo> LogicalDeviceBuilder::BuildQueueCreateInfos(cons
     return result;
 }
 
-VkPhysicalDeviceFeatures LogicalDeviceBuilder::BuildDeviceFeatures()
+VkPhysicalDeviceFeatures LogicalDeviceBuilder::BuildDeviceFeatures() const
 {
     VkPhysicalDeviceFeatures deviceFeatures{};
 

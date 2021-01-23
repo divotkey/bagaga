@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <memory>
 #include <string>
 #include <vector>

@@ -1,7 +1,7 @@
 // Experimental Vulkan-Integration (EVI)
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <cassert>
 
 // Local includes
@@ -58,7 +58,7 @@ RenderPassBuilder& RenderPassBuilder::CooseColorAttachmentFormat(SwapChain & swa
 }
 
 
-unique_ptr<RenderPass> RenderPassBuilder::Build(shared_ptr<LogicalDevice> device)
+unique_ptr<RenderPass> RenderPassBuilder::Build(shared_ptr<LogicalDevice> device) const
 {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = colorAttachmentFormat;

@@ -25,6 +25,10 @@ add_executable(VulkanTest
         ../common/vlk/InputAssembly.cpp
         ../common/vlk/ViewportState.cpp
         ../common/vlk/Rasterizer.cpp
+        ../common/vlk/Multisampling.cpp
+        ../common/vlk/DepthStencilState.cpp
+        ../common/vlk/ColorBlendState.cpp
+        ../common/vlk/DynamicState.cpp
         ../common/vlk/GraphicsPipeline.cpp
         ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp

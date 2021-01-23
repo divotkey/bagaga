@@ -1,7 +1,7 @@
 // Experimental Vulkan-Integration (EVI)
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <cassert>
 
 // Local includes
@@ -33,7 +33,7 @@ InputAssemblyBuilder & InputAssemblyBuilder::PrimitiveRestart(bool enable)
     return *this;
 }
 
-VkPipelineInputAssemblyStateCreateInfo InputAssemblyBuilder::Build()
+VkPipelineInputAssemblyStateCreateInfo InputAssemblyBuilder::Build() const
 {
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

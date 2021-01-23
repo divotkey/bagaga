@@ -25,7 +25,7 @@ public:
 
     InputAssemblyBuilder & PrimitiveRestart(bool enable);
 
-    VkPipelineInputAssemblyStateCreateInfo Build();
+    VkPipelineInputAssemblyStateCreateInfo Build() const;
 
 private:
     /** Describes the kind of geometry to be rendered. */

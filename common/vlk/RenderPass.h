@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Standard C++ Library includes
+// C++ Standard Library includes
 #include <memory>
 
 // Vulkan includes
@@ -78,7 +78,7 @@ public:
      * @return the newly created render pass object
      * @throws std::runtime_error in case render pass object could not be created
      */
-    std::unique_ptr<RenderPass> Build(std::shared_ptr<LogicalDevice> device);
+    std::unique_ptr<RenderPass> Build(std::shared_ptr<LogicalDevice> device) const;
 
 private:
     /** The format of the color attachment. */
