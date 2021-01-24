@@ -29,6 +29,8 @@ add_executable(VulkanTest
         ../common/vlk/DepthStencilState.cpp
         ../common/vlk/ColorBlendState.cpp
         ../common/vlk/DynamicState.cpp
+        ../common/vlk/PipelineLayout.cpp
+        ../common/vlk/ShaderStageInfo.cpp
         ../common/vlk/GraphicsPipeline.cpp
         ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp

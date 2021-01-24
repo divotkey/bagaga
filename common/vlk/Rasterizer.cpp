@@ -79,6 +79,8 @@ RasterizerBuilder& RasterizerBuilder::Reset()
     depthBiasConstantFactor = 0.0f;
     depthBiasClamp = 0.0f;
     depthBiasSlopeFactor = 0.0f;
+
+    return *this;
 }
 
 VkPipelineRasterizationStateCreateInfo RasterizerBuilder::Build() const

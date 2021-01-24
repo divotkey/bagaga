@@ -21,7 +21,7 @@ public:
      */
     VertexInputInfoBuilder & Reset();
 
-    VkPipelineVertexInputStateCreateInfo Build();
+    VkPipelineVertexInputStateCreateInfo Build() const;
 
 private:
 };

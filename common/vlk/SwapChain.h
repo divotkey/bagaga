@@ -14,6 +14,9 @@
 class PhysicalDevice;
 class LogicalDevice;
 
+// Forward declaration
+class LogicalDevice;
+
 /**
  * Wraps a Vulkan swap chain.
  */
@@ -90,6 +93,7 @@ private:
     /** The resolution of the swap chain images. */
     VkExtent2D extent;
     
+
     /**
      * Creates an image view of an image.
      * 

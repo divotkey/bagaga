@@ -19,7 +19,7 @@ VertexInputInfoBuilder & VertexInputInfoBuilder::Reset()
     return *this;
 }
 
-VkPipelineVertexInputStateCreateInfo VertexInputInfoBuilder::Build()
+VkPipelineVertexInputStateCreateInfo VertexInputInfoBuilder::Build() const
 {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
