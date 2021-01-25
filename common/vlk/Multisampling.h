@@ -33,7 +33,7 @@ public:
      * @param value `true` to enable sample shading
      * @return reference to this builder used for method chaining
      */
-    MultisamplingBuilder& SampleShading(bool value);
+    MultisamplingBuilder& EnableSampleShading(bool value);
 
     /**
      * Specifying the number of samples used in rasterization.
@@ -49,13 +49,13 @@ public:
      * @param minFraction   the minimum fraction
      * @return reference to this builder used for method chaining
      */
-    MultisamplingBuilder& RasterizationSamples(float minFraction);
+    MultisamplingBuilder& MinSampleShading(float minFraction);
 
     MultisamplingBuilder& SampleMask(VkSampleMask *pMask);
 
-    MultisamplingBuilder& AlphaToCoverage(bool value);
+    MultisamplingBuilder& EnableAlphaToCoverage(bool value);
 
-    MultisamplingBuilder& AlphaToOne(bool value);
+    MultisamplingBuilder& EnableAlphaToOne(bool value);
     
     /**
      * Builds the multisampling structure according to the current configuration.

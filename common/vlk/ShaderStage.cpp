@@ -2,12 +2,12 @@
 // Copyright 2020, 2021 Roman Divotkey. All rights reserved.
 
 // C++ Standard Library includes
-#include <cassert>
 #include <stdexcept>
+#include <cassert>
 
 // Local includes
 #include "LogicalDevice.h"
-#include "ShaderStageInfo.h"
+#include "ShaderStage.h"
 
 using namespace std;
 
@@ -42,20 +42,22 @@ ShaderModuleBuilder::ShaderModuleBuilder()
 
 ShaderModuleBuilder & ShaderModuleBuilder::Code(const unsigned char * shaderCode, size_t codeSize)
 {
+    if (codeSize % 4 != 0) {
+        throw invalid_argument("Code size for shader module must be a multiple of four, got " 
+            + to_string(codeSize));
+    }
     code.insert(code.end(), shaderCode, shaderCode + codeSize);
     return *this;
 }
 
 ShaderModuleBuilder & ShaderModuleBuilder::Code(const std::vector<unsigned char> & shaderCode)
 {
-    code = shaderCode;
-    return *this;    
+    return Code(shaderCode.data(), shaderCode.size());
 }
 
 ShaderModuleBuilder & ShaderModuleBuilder::Reset()
 {
-    code.resize(0);
-    code.shrink_to_fit();
+    code.clear();
     return *this;
 }
 
@@ -75,52 +77,96 @@ std::unique_ptr<ShaderModule> ShaderModuleBuilder::Build(std::shared_ptr<Logical
     return make_unique<ShaderModule>(handle, device);
 }
 
+/////////////////////////////////////////////////
+/////// ShaderStageInfo
+/////////////////////////////////////////////////
+
+ShaderStageInfo::ShaderStageInfo(
+        VkPipelineShaderStageCreateInfo shaderStage, 
+        std::shared_ptr<ShaderModule> shaderModule, 
+        const std::string & entryPoint)
+    : shaderStage(shaderStage), shaderModule(shaderModule), entryPoint(entryPoint)
+{
+    UpdateAndValidate();
+}
+
+ShaderStageInfo::ShaderStageInfo(const ShaderStageInfo & o)
+    : shaderStage(o.shaderStage), shaderModule(o.shaderModule), entryPoint(o.entryPoint)
+{
+    UpdateAndValidate();
+}
+
+ShaderStageInfo & ShaderStageInfo::operator= (const ShaderStageInfo & rhs)
+{
+    shaderStage = rhs.shaderStage;
+    shaderModule = rhs.shaderModule;
+    entryPoint = rhs.entryPoint;
+    UpdateAndValidate();
+}
+
+void ShaderStageInfo::UpdateAndValidate()
+{
+    shaderStage.pName = entryPoint.c_str();
+    shaderStage.module = *shaderModule;
+}
 
 /////////////////////////////////////////////////
 /////// ShaderStageInfoBuilder
 /////////////////////////////////////////////////
 
-const string ShaderStageInfoBuilder::kDefaultEntryPoint = "main";
+const string ShaderStageBuilder::kDefaultEntryPoint = "main";
 
-ShaderStageInfoBuilder::ShaderStageInfoBuilder()
+ShaderStageBuilder::ShaderStageBuilder()
 {
     Reset();
 }
 
-ShaderStageInfoBuilder & ShaderStageInfoBuilder::Stage(VkShaderStageFlagBits flag)
+ShaderStageBuilder & ShaderStageBuilder::CreateFlags(VkPipelineShaderStageCreateFlags flags)
+{
+    createFlags = flags;
+    return *this;
+}
+
+
+ShaderStageBuilder & ShaderStageBuilder::Stage(VkShaderStageFlagBits flag)
 {
     stage = flag;
     return *this;
 }
 
-ShaderStageInfoBuilder & ShaderStageInfoBuilder::EntryPoint(const char * name)
+ShaderStageBuilder & ShaderStageBuilder::EntryPoint(const char * name)
 {
     entryPoint = name;
     return *this;
 }
 
-ShaderStageInfoBuilder & ShaderStageInfoBuilder::Module(VkShaderModule shaderModule)
+ShaderStageBuilder & ShaderStageBuilder::Module(std::shared_ptr<ShaderModule> shaderModule)
 {
     this->shaderModule = shaderModule;
     return *this;
 }
 
-ShaderStageInfoBuilder & ShaderStageInfoBuilder::Reset()
+ShaderStageBuilder & ShaderStageBuilder::Reset()
 {
     stage = VK_SHADER_STAGE_VERTEX_BIT;
     entryPoint = kDefaultEntryPoint;
-    shaderModule = VK_NULL_HANDLE;
+    shaderModule = nullptr;
+    createFlags = 0;
     return *this;
 }
 
-VkPipelineShaderStageCreateInfo ShaderStageInfoBuilder::Build() const
+ShaderStageInfo ShaderStageBuilder::Build() const
 {
+    if (!shaderModule) {
+        throw logic_error("Unable to build shader stage info, no shader module specified");
+    }
+
     VkPipelineShaderStageCreateInfo shaderStageInfo{};
     shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    shaderStageInfo.flags = createFlags;
     shaderStageInfo.stage = stage;
-    shaderStageInfo.module = shaderModule;
-    shaderStageInfo.pName = entryPoint.c_str();
+    shaderStageInfo.pSpecializationInfo = nullptr;
 
-    return shaderStageInfo;
+    return ShaderStageInfo(shaderStageInfo, shaderModule, entryPoint);
 }
 

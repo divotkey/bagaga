@@ -22,6 +22,17 @@
 #include "vlk/LogicalDevice.h"
 #include "vlk/SwapChain.h"
 #include "vlk/RenderPass.h"
+#include "vlk/GraphicsPipeline.h"
+#include "vlk/VertexInputInfo.h"
+#include "vlk/InputAssembly.h"
+#include "vlk/ViewportState.h"
+#include "vlk/Rasterizer.h"
+#include "vlk/Multisampling.h"
+#include "vlk/ColorBlendState.h"
+#include "vlk/PipelineLayout.h"
+#include "vlk/ShaderStage.h"
+#include "vlk/shd/frag.h"
+#include "vlk/shd/vert.h"
 #include "SdlVulkanService.h"
 
 using namespace astu;
@@ -66,7 +77,8 @@ void SdlVulkanService::OnStartup()
         // SdlVulkanLogger::LogDeviceExtensions(*physicalDevice);
         CreateLogicalDevice();
         CreateSwapChain();    
-        CreateRenderPass();    
+        CreateRenderPass();
+        CreateGraphicsPipeline();
     } catch (...) {
         Cleanup();
         throw;
@@ -232,6 +244,100 @@ void SdlVulkanService::CreateRenderPass()
         .Build(logicalDevice);
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created render pass object");
+}
+
+void SdlVulkanService::CreateGraphicsPipeline()
+{
+    GraphicsPipelineBuilder builder;
+
+    builder.VertexInputInfo(
+        VertexInputInfoBuilder()
+        .Build());
+
+    builder.InputAssembly(
+        InputAssemblyBuilder()
+        .Topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+        .PrimitiveRestart(false).Build()
+        );
+
+    builder.ViewportState(
+        ViewportStateBuilder()
+        .AddViewport(ViewportBuilder().ChoosePositionAndSize(*swapChain).Build())
+        .Build());
+
+    builder.Rasterizer(
+        RasterizerBuilder()
+        .EnableDepthClamp(false)
+        .EnableRasterizerDiscard(false)
+        .PolygonMode(VK_POLYGON_MODE_FILL)
+        .LineWidth(1.0f)
+        .CullMode(VK_CULL_MODE_BACK_BIT)
+        .FrontFace(VK_FRONT_FACE_CLOCKWISE)
+        .EnableDepthBias(false)
+        .DepthBiasConstantFactor(0.0f)
+        .DepthBiasClamp(0.0f)
+        .DepthBiasSlopeFactor(0.0f)
+        .Build());
+
+    builder.Multisampling(
+        MultisamplingBuilder()
+        .EnableSampleShading(false)
+        .RasterizationSamples(VK_SAMPLE_COUNT_1_BIT)
+        .MinSampleShading(1.0f)
+        .EnableAlphaToCoverage(false)
+        .EnableAlphaToOne(false)
+        .Build());
+
+    builder.ColorBlending(
+        ColorBlendStateBuilder()
+        .EnableLogicOp(false)
+        .LogicOp(VK_LOGIC_OP_COPY)
+        .AddAttachment(
+            BlendAttachmentStateBuilder()
+            .EnableBlend(false)
+            .SrcColorBlendFactor(VK_BLEND_FACTOR_ONE)
+            .DstColorBlendFactor(VK_BLEND_FACTOR_ZERO)
+            .ColorBlendOp(VK_BLEND_OP_ADD)
+            .SrcAlphaBlendFactor(VK_BLEND_FACTOR_ONE)
+            .DstAlphaBlendFactor(VK_BLEND_FACTOR_ZERO)
+            .AlphaBlendOp(VK_BLEND_OP_ADD)
+            .Build())
+        .Build());
+
+    builder.Layout(
+        PipelineLayoutBuilder()
+        .Build(logicalDevice));
+
+
+    builder.RenderPass(*renderPass, 0);
+
+            // ShaderModuleBuilder()
+            // .Code(kVertexShader)
+            // .Build(logicalDevice))
+
+
+    builder.AddShaderStage(
+        ShaderStageBuilder()
+        .Stage(VK_SHADER_STAGE_VERTEX_BIT)
+        .EntryPoint("main")
+        .Module(
+            ShaderModuleBuilder()
+            .Code(kVertexShader)
+            .Build(logicalDevice))
+        .Build());
+
+    builder.AddShaderStage(
+        ShaderStageBuilder()
+        .Stage(VK_SHADER_STAGE_FRAGMENT_BIT)
+        .EntryPoint("main")
+        .Module(
+            ShaderModuleBuilder()
+            .Code(kFragmentShader)
+            .Build(logicalDevice))
+        .Build());
+
+    graphicsPipeline = builder.Build(logicalDevice);
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created graphics pipeline object");
 }
 
 void SdlVulkanService::CreateSurface() 

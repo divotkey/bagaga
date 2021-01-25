@@ -20,7 +20,14 @@ RasterizerBuilder & RasterizerBuilder::EnableDepthClamp(bool value)
     return *this;
 }
 
-RasterizerBuilder & RasterizerBuilder::RolygonMode(VkPolygonMode mode)
+RasterizerBuilder & RasterizerBuilder::EnableRasterizerDiscard(bool value)
+{
+    rasterizerDiscard = value;
+    return *this;
+}
+
+
+RasterizerBuilder & RasterizerBuilder::PolygonMode(VkPolygonMode mode)
 {
     polygonMode = mode;
     return *this;
@@ -44,7 +51,7 @@ RasterizerBuilder & RasterizerBuilder::FrontFace(VkFrontFace frontFace)
     return *this;
 }
 
-RasterizerBuilder & RasterizerBuilder::DepthBias(bool value)
+RasterizerBuilder & RasterizerBuilder::EnableDepthBias(bool value)
 {
     depthBias = value;
     return *this;
@@ -71,6 +78,7 @@ RasterizerBuilder & RasterizerBuilder::DepthBiasSlopeFactor(float slopeFactor)
 RasterizerBuilder& RasterizerBuilder::Reset()
 {
     depthClamp = false;
+    rasterizerDiscard = false;
     lineWidth = 1.0f;
     polygonMode = VK_POLYGON_MODE_FILL;
     cullMode = VK_CULL_MODE_BACK_BIT;
@@ -88,6 +96,7 @@ VkPipelineRasterizationStateCreateInfo RasterizerBuilder::Build() const
     VkPipelineRasterizationStateCreateInfo rasterizer{};
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizer.depthClampEnable = depthClamp ? VK_TRUE : VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = rasterizerDiscard ? VK_TRUE : VK_FALSE;
     rasterizer.polygonMode = polygonMode;
     rasterizer.lineWidth = lineWidth;
     rasterizer.cullMode = cullMode;

@@ -29,6 +29,22 @@ public:
      */
     ~PipelineLayout();
 
+    /**
+     * Returns the Vulkan handle to the pipeline layout.
+     * 
+     * @return the Vulkan handle
+     */
+    VkPipelineLayout GetHandle() const {
+        return pipelineLayout;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkPipelineLayout() const { 
+        return GetHandle();
+    }
+
 private:
     /** The handle to the pipeline layout object. */
     VkPipelineLayout pipelineLayout;

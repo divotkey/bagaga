@@ -14,7 +14,7 @@ MultisamplingBuilder::MultisamplingBuilder()
     Reset();
 }
 
-MultisamplingBuilder& MultisamplingBuilder::SampleShading(bool value)
+MultisamplingBuilder& MultisamplingBuilder::EnableSampleShading(bool value)
 {
     sampleShading = value;
     return *this;
@@ -26,7 +26,7 @@ MultisamplingBuilder& MultisamplingBuilder::RasterizationSamples(VkSampleCountFl
     return *this;
 }
 
-MultisamplingBuilder& MultisamplingBuilder::RasterizationSamples(float minFraction)
+MultisamplingBuilder& MultisamplingBuilder::MinSampleShading(float minFraction)
 {
    minSampleShading = minFraction; 
     return *this;
@@ -38,13 +38,13 @@ MultisamplingBuilder& MultisamplingBuilder::SampleMask(VkSampleMask *pMask)
     return *this;
 }
 
-MultisamplingBuilder& MultisamplingBuilder::AlphaToCoverage(bool value)
+MultisamplingBuilder& MultisamplingBuilder::EnableAlphaToCoverage(bool value)
 {
     alphaToCoverage = value;    
     return *this;
 }
 
-MultisamplingBuilder& MultisamplingBuilder::AlphaToOne(bool value)
+MultisamplingBuilder& MultisamplingBuilder::EnableAlphaToOne(bool value)
 {
     alphaToOne = value;
     return *this;

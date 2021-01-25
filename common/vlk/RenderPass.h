@@ -32,6 +32,22 @@ public:
      */
     ~RenderPass();
 
+    /**
+     * Returns the Vulkan handle to the render pass object.
+     * 
+     * @return the Vulkan handle
+     */
+    VkRenderPass GetHandle() const {
+        return renderPass;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkRenderPass() const { 
+        return GetHandle();
+    }
+
 private:
     /** Handle to the render pass object. */
     VkRenderPass renderPass;

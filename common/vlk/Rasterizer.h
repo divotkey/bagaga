@@ -32,12 +32,20 @@ public:
     RasterizerBuilder & EnableDepthClamp(bool value);
 
     /**
+     * Specified primitives are discarded immediately before the rasterization stage.
+     *      * 
+     * @param value `true` to enable rasterizer discard.
+     * @return reference to this builder used for method chaining
+     */
+    RasterizerBuilder & EnableRasterizerDiscard(bool value);
+
+    /**
      * Specifies the polygon rasterization mode.
      * 
      * @param mode  the polygon rasterization mode
      * @return reference to this builder used for method chaining
      */
-    RasterizerBuilder & RolygonMode(VkPolygonMode mode);
+    RasterizerBuilder & PolygonMode(VkPolygonMode mode);
 
     /**
      * Specifies the width of rasterized line segments.
@@ -68,7 +76,7 @@ public:
     RasterizerBuilder & FrontFace(VkFrontFace frontFace);
 
 
-    RasterizerBuilder & DepthBias(bool value);
+    RasterizerBuilder & EnableDepthBias(bool value);
 
     RasterizerBuilder & DepthBiasConstantFactor(float constantFactor);
 
@@ -96,6 +104,9 @@ private:
     /** Whether to enable depth clamp of fragments. */
     bool depthClamp;
 
+    /** Controls whether primitives are discarded immediately before the rasterization stage. */
+    bool rasterizerDiscard;
+
     /** Control polygon rasterization mode. */
     VkPolygonMode polygonMode;
 
@@ -117,6 +128,6 @@ private:
     /** The maximum (or minimum) depth bias of a fragment. */
     float depthBiasClamp;
 
-    /** a scalar factor applied to a fragment’s slope in depth bias calculations. */
+    /** A scalar factor applied to a fragment’s slope in depth bias calculations. */
     float depthBiasSlopeFactor;
 };

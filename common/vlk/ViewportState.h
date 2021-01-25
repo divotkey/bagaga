@@ -3,19 +3,32 @@
 
 #pragma once
 
+// C++ Standard Library includes
+#include <vector>
+
 // Vulkan includes
 #include <vulkan/vulkan.h>
 
+// Forward declaration
+class SwapChain;
+
 /**
- * Utility class used to build viewport state structures.
+ * Utility class used to build Vulkan viewport structures.
  */
-class ViewportStateBuilder {
+class ViewportBuilder {
 public:
 
     /**
      * Constructor.
      */
-    ViewportStateBuilder();
+    ViewportBuilder();
+
+    /**
+     * Resets this builder to its initial condition.
+     * 
+     * @return reference to this builder used for method chaining
+     */
+    ViewportBuilder & Reset();
 
     /**
      * Specifies the minimum value for depth in the framebuffer.
@@ -24,7 +37,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the min depth is less than zero
      */
-    ViewportStateBuilder & MinDepth(float minDepth);
+    ViewportBuilder & MinDepth(float minDepth);
 
     /**
      * Specifies the minimum value for depth in the framebuffer.
@@ -33,7 +46,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the min depth is greater than one
      */
-    ViewportStateBuilder & MaxDepth(float maxDepth);
+    ViewportBuilder & MaxDepth(float maxDepth);
 
     /**
      * Specifies the minimum and maximum value for depth in the framebuffer.
@@ -43,7 +56,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the values are out of range [0, 1]
      */
-    ViewportStateBuilder & Depth(float minDepth, float maxDepth) {
+    ViewportBuilder & Depth(float minDepth, float maxDepth) {
         MinDepth(minDepth);
         MaxDepth(maxDepth);
         return*this;
@@ -56,7 +69,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the width is less or equal zero
      */
-    ViewportStateBuilder & Width(float width);
+    ViewportBuilder & Width(float width);
 
     /**
      * Specifies the height of the viewport;
@@ -65,7 +78,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the height is less or equal zero
      */
-    ViewportStateBuilder & Height(float height);    
+    ViewportBuilder & Height(float height);    
 
     /**
      * Specifies the width and height of the viewport;
@@ -75,7 +88,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the width or height is less or equal zero
      */
-    ViewportStateBuilder & Size(float width, float height)
+    ViewportBuilder & Size(float width, float height)
     {
         Width(width);
         Height(height);
@@ -88,7 +101,7 @@ public:
      * @param swapChain the swap chain
      * @return reference to this builder used for method chaining
      */
-    ViewportStateBuilder & ChoosePositionAndSize(const SwapChain & swapChain);
+    ViewportBuilder & ChoosePositionAndSize(const SwapChain & swapChain);
 
     /**
      * Specifies the width and height of the viewport;
@@ -97,7 +110,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the width or height are zero
      */
-    ViewportStateBuilder & Size(const VkExtent2D & extend)
+    ViewportBuilder & Size(const VkExtent2D & extend)
     {
         Width(static_cast<float>(extend.width));
         Height(static_cast<float>(extend.height));
@@ -111,7 +124,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the coordinage is less than zero
      */
-    ViewportStateBuilder & StartX(float x);
+    ViewportBuilder & StartX(float x);
 
     /**
      * Sets the y-coordinate of the upper left corner of the viewport
@@ -120,14 +133,7 @@ public:
      * @return reference to this builder used for method chaining
      * @throws std::invalid_argument in case the coordinage is less than zero
      */
-    ViewportStateBuilder & StartY(float y);
-
-    /**
-     * Resets this builder to its initial condition.
-     * 
-     * @return reference to this builder used for method chaining
-     */
-    ViewportStateBuilder & Reset();
+    ViewportBuilder & StartY(float y);
 
     /**
      * Builds the viewport state structure according to the current configuration.
@@ -135,7 +141,7 @@ public:
      * @return the viewport state structure
      * @throws std::logic_error in case the current configuration is invalid
      */
-    VkPipelineViewportStateCreateInfo Build() const;
+    VkViewport Build() const;
 
 private:
     /** The minimum value for the depth of the framebuffer. */
@@ -163,4 +169,135 @@ private:
      * @throws std::logic_error in case the configuration is incomplete or invalid
      */
     void ValidateConfiguration() const;
+};
+
+/**
+ * Wraps Vulkan VkPipelineViewportStateCreateInfo structure and
+ * containts the corresponding VkViewport and VkRect2D 
+ * (scissors) structures as well.
+ */
+class ViewportStateInfo {
+public:
+
+    /**
+     * Constructor.
+     * 
+     * The viewport state info structure will be completed by this construtor,
+     * according to the content of viewport and scissors parameter.
+     * 
+     * @param info  the viewport state info structure
+     * @param viewports the viewports of the viewport state
+     * @param scissors the scissors of the viewport state
+     * @throws std::invalid_argument in case the parameters are invalid
+     */
+    ViewportStateInfo(
+        const VkPipelineViewportStateCreateInfo & info, 
+        const std::vector<VkViewport> & viewports,
+        const std::vector<VkRect2D>  &scissors
+        );
+
+    /**
+     * Copy constructor.
+     * 
+     * @param o the other instance
+     */
+    ViewportStateInfo(const ViewportStateInfo & o);
+
+    /**
+     * Returns the viewport state structure.
+     * 
+     * @return the viewport state create info structure
+     */
+    const VkPipelineViewportStateCreateInfo & GetInfo() const {
+        return viewportState;
+    }
+
+    /**
+     * Copy assignment operator.
+     * 
+     * @param rhs   the right hand side
+     * @return reference to this instance
+     */
+    ViewportStateInfo & operator= (const ViewportStateInfo & rhs);
+
+    /**
+     * Implicit conversion to Vulkan VkPipelineViewportStateCreateInfo.
+     */
+    operator VkPipelineViewportStateCreateInfo() const { 
+        return GetInfo();
+    }
+
+    /**
+     * Implicit conversion to pointer to Vulkan VkPipelineViewportStateCreateInfo.
+     */
+    operator const VkPipelineViewportStateCreateInfo*() const { 
+        return &GetInfo();
+    }
+
+private:
+    /** The viewport state info structure. */
+    VkPipelineViewportStateCreateInfo viewportState;
+
+    /** The viewports of this viewport state. */
+    std::vector<VkViewport> viewports;
+
+    /** The viewports of this viewport state. */
+    std::vector<VkRect2D> scissors;
+
+
+    /**
+     * Updates the viewport state structure.
+     */
+    void UpdateAndValidate();
+};
+
+/**
+ * Utility class used to build viewport state structures.
+ */
+class ViewportStateBuilder {
+public:
+
+    /**
+     * Constructor.
+     */
+    ViewportStateBuilder();
+
+    /**
+     * Adds a viewport to the viewport state to build.
+     * 
+     * @param viewport  the viewport to add
+     * @return reference to this builder used for method chaining
+     */
+    ViewportStateBuilder & AddViewport(const VkViewport & viewport);
+
+    /**
+     * Adds a viewport to the viewport state to build.
+     * 
+     * @param viewport  the viewport to add
+     * @param scissor   the scissor rectangle for the viewport
+     * @return reference to this builder used for method chaining
+     */
+    ViewportStateBuilder & AddViewport(const VkViewport & viewport, const VkRect2D & scissor);
+
+    /**
+     * Resets this builder to its initial condition.
+     * 
+     * @return reference to this builder used for method chaining
+     */
+    ViewportStateBuilder & Reset();
+
+    /**
+     * Builds the viewport state structure according to the current configuration.
+     * 
+     * @return the viewport info instance
+     * @throws std::logic_error in case the current configuration is invalid
+     */
+    ViewportStateInfo Build() const;
+
+private:
+    /** The viewports of this viewport state. */
+    std::vector<VkViewport> viewports;
+
+    /** The viewports of this viewport state. */
+    std::vector<VkRect2D> scissors;
 };

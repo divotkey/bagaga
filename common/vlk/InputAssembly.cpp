@@ -36,7 +36,7 @@ InputAssemblyBuilder & InputAssemblyBuilder::PrimitiveRestart(bool enable)
 VkPipelineInputAssemblyStateCreateInfo InputAssemblyBuilder::Build() const
 {
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = topology;
     inputAssembly.primitiveRestartEnable = primitiveRestart ? VK_TRUE : VK_FALSE;
 

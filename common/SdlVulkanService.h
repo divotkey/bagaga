@@ -22,6 +22,7 @@ class VulkanInstance;
 class LogicalDevice;
 class SwapChain;
 class RenderPass;
+class GraphicsPipeline;
 
 class SdlVulkanService : public astu::UpdatableBaseService {
 public:
@@ -64,20 +65,23 @@ private:
     /** The Vulkan instance. */
     std::unique_ptr<VulkanInstance> instance;
 
+    /** The physical device to be used. */
+    std::unique_ptr<PhysicalDevice> physicalDevice;
+
     /** Represents the logical Vulkan device. */
     std::shared_ptr<LogicalDevice> logicalDevice;
 
     /** Used to receive debug messages from Vulkan validation layer. */
     VkDebugUtilsMessengerEXT debugMessenger;
 
-    /** The physical device to be used. */
-    std::unique_ptr<PhysicalDevice> physicalDevice;
-
     /** The swap chain used to present the rendered images. */
     std::unique_ptr<SwapChain> swapChain;
 
     /** The render pass object. */
     std::unique_ptr<RenderPass> renderPass;
+
+    /** The graphics pipeline. */
+    std::unique_ptr<GraphicsPipeline> graphicsPipeline;
 
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
@@ -138,6 +142,11 @@ private:
      * Creates the window surface.
      */
     void CreateSurface();
+
+    /**
+     * Creates the graphics pipeline.
+     */
+    void CreateGraphicsPipeline();
 
     /**
      * Rates a physical device.

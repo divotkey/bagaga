@@ -60,7 +60,7 @@ void ConvertBinary(const string & input, const string & output, const string & v
 
     // Write C++ header.
     ofs << "#pragma once" << endl << endl;
-    ofs << "#intluce <vector>" << endl << endl;
+    ofs << "#include <vector>" << endl << endl;
     ofs << "std::vector<unsigned char> " << varName << " = {" << endl << "\t";
     ofs << setfill('0');
 
