@@ -24,14 +24,14 @@ class SwapChain final {
 public:
 
     /**
-     * Constructor.
-     * 
-     * @param handle    the swap chain handle
-     * @param device    the physical device this swap chain belongs to
-     * @param format    the image format of this swap chain
-     * @param extent    the resolution of the swap chain images
+     * Deleted copy constructor.
      */
-    SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent);
+    SwapChain(const SwapChain &) = delete;
+
+    /**
+     * Deleted assignment operator.
+     */
+    SwapChain & operator =(const SwapChain &) = delete;
 
     /**
      * Destructor.
@@ -74,6 +74,15 @@ public:
         return GetExtent().height;
     }
     
+    /**
+     * Returns the image views of this swap chain.
+     * 
+     * @return the image views
+     */
+    const std::vector<VkImageView> GetImageViews() const {
+        return imageViews;
+    }
+
 private:
     /** The handle of the swap chain. */
     VkSwapchainKHR swapChain;
@@ -100,6 +109,16 @@ private:
      * @param image     the handle to the image
      */
     VkImageView CreateImageView(const VkImage & image) const;
+
+    /**
+     * Constructor.
+     * 
+     * @param handle    the swap chain handle
+     * @param device    the physical device this swap chain belongs to
+     * @param format    the image format of this swap chain
+     * @param extent    the resolution of the swap chain images
+     */
+    SwapChain(VkSwapchainKHR handle, std::shared_ptr<LogicalDevice> device, VkFormat format, VkExtent2D extent);
 
     friend class SwapChainBuilder;
 };
@@ -156,7 +175,7 @@ public:
     SwapChainBuilder & ChooseSurfaceFormat(const PhysicalDevice & device, VkSurfaceKHR surface);
 
     /**
-     * Cooses an image format for the swap chain based on the given device.
+     * Chooses an image format for the swap chain based on the given device.
      * 
      * @param device    the physical device
      * @return reference to this builder used for method chaining
@@ -189,7 +208,7 @@ public:
      * @param fbh       the height of the framebuffer in pixels
      * @return reference to this builder used for method chaining
      */
-    SwapChainBuilder & CooseImageExtend(const VkPhysicalDevice device, VkSurfaceKHR surface, int fbw, int fbh);
+    SwapChainBuilder & ChooseImageExtend(const VkPhysicalDevice device, VkSurfaceKHR surface, int fbw, int fbh);
 
     /**
      * Chooses an image extent chain based on the given device.
@@ -201,7 +220,7 @@ public:
      * @return reference to this builder used for method chaining
      * 
      */
-    SwapChainBuilder & CooseImageExtend(const PhysicalDevice & device, VkSurfaceKHR surface, int fbw, int fbh);
+    SwapChainBuilder & ChooseImageExtend(const PhysicalDevice & device, VkSurfaceKHR surface, int fbw, int fbh);
 
     /***
      * Specifies the number of images in the swap chain.
@@ -218,7 +237,7 @@ public:
      * @param surface   the window surface
      * @return reference to this builder used for method chaining
      */
-    SwapChainBuilder & CooseImageCount(const PhysicalDevice & device, VkSurfaceKHR surface);
+    SwapChainBuilder & ChooseImageCount(const PhysicalDevice & device, VkSurfaceKHR surface);
 
     /**
      * Specifies the transformation applied to images of the swap chain.
@@ -235,7 +254,7 @@ public:
      * @param surface   the window surface
      * @return reference to this builder used for method chaining
      */
-    SwapChainBuilder & CooseTransform(const PhysicalDevice & device, VkSurfaceKHR surface);
+    SwapChainBuilder & ChooseTransform(const PhysicalDevice & device, VkSurfaceKHR surface);
 
     /**
      * Chooses an appropriate configuration based on the given device.

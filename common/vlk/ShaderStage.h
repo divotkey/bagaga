@@ -21,12 +21,14 @@ class ShaderModule {
 public:
 
     /**
-     * Constructor.
-     * 
-     * @param handle    the swap chain handle
-     * @param device    the physical device this swap chain belongs to
+     * Deleted copy constructor.
      */
-    ShaderModule(VkShaderModule handle, std::shared_ptr<LogicalDevice> device);
+    ShaderModule(const ShaderModule &) = delete;
+
+    /**
+     * Deleted assignment operator.
+     */
+    ShaderModule & operator =(const ShaderModule &) = delete;
 
     /**
      * Destructor.
@@ -50,11 +52,22 @@ public:
     }
 
 private:
-    /** The handle of shader module */
+    /** The handle of shader module. */
     VkShaderModule shaderModule;
 
     /** The logical device this swap chain belongs to. */
     std::shared_ptr<LogicalDevice> device;
+
+
+    /**
+     * Constructor.
+     * 
+     * @param handle    the swap chain handle
+     * @param device    the physical device this swap chain belongs to
+     */
+    ShaderModule(VkShaderModule handle, std::shared_ptr<LogicalDevice> device);
+
+    friend class ShaderModuleBuilder;
 };
 
 /**

@@ -17,17 +17,19 @@ class PipelineLayout final {
 public:
 
     /**
-     * Constructor.
-     * 
-     * @param handle    the handle to the pipeline layout object
-     * @param device    the physical device this pipeline layout belongs to
-     */
-    PipelineLayout(VkPipelineLayout handle, std::shared_ptr<LogicalDevice> device);
-
-    /**
      * Destructor.
      */
     ~PipelineLayout();
+
+    /**
+     * Deleted copy constructor.
+     */
+    PipelineLayout(const PipelineLayout &) = delete;
+
+    /**
+     * Deleted assignment operator.
+     */
+    PipelineLayout & operator =(const PipelineLayout &) = delete;
 
     /**
      * Returns the Vulkan handle to the pipeline layout.
@@ -51,6 +53,17 @@ private:
 
     /** The logical device this swap chain belongs to. */
     std::shared_ptr<LogicalDevice> device;
+
+    /**
+     * Constructor.
+     * 
+     * @param handle    the handle to the pipeline layout object
+     * @param device    the physical device this pipeline layout belongs to
+     */
+    PipelineLayout(VkPipelineLayout handle, std::shared_ptr<LogicalDevice> device);
+
+
+    friend class PipelineLayoutBuilder;
 };
 
 /**

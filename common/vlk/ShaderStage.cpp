@@ -74,7 +74,7 @@ std::unique_ptr<ShaderModule> ShaderModuleBuilder::Build(std::shared_ptr<Logical
         throw std::runtime_error("Failed to create shader module, error " + to_string(res));
     }
 
-    return make_unique<ShaderModule>(handle, device);
+    return unique_ptr<ShaderModule>(new ShaderModule(handle, device));
 }
 
 /////////////////////////////////////////////////
@@ -126,7 +126,6 @@ ShaderStageBuilder & ShaderStageBuilder::CreateFlags(VkPipelineShaderStageCreate
     createFlags = flags;
     return *this;
 }
-
 
 ShaderStageBuilder & ShaderStageBuilder::Stage(VkShaderStageFlagBits flag)
 {

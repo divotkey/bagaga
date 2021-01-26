@@ -61,5 +61,5 @@ unique_ptr<PipelineLayout> PipelineLayoutBuilder::Build(shared_ptr<LogicalDevice
         throw std::runtime_error("Failed to create pipeline layout, error " + to_string(res));
     }
 
-    return make_unique<PipelineLayout>(handle, device);
+    return unique_ptr<PipelineLayout>(new PipelineLayout(handle, device));
 }

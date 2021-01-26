@@ -27,15 +27,15 @@ class RenderPass;
 class GraphicsPipeline {
 public:
 
+    /**
+     * Deleted copy constructor.
+     */
+    GraphicsPipeline(const GraphicsPipeline &) = delete;
 
     /**
-     * Constructor.
-     * 
-     * @param handle    he handle to the Vulkan graphics pipeline object
-     * @param device    the physical device this swap chain belongs to
-     * @param layout    the pipeline layout
+     * Deleted assignment operator.
      */
-    GraphicsPipeline(VkPipeline handle, std::shared_ptr<LogicalDevice> device, std::shared_ptr<PipelineLayout> layout);
+    GraphicsPipeline & operator =(const GraphicsPipeline &) = delete;
 
     /**
      * Virtual destructor.
@@ -51,6 +51,18 @@ private:
 
     /** The pipeline layout. */
     std::shared_ptr<PipelineLayout> layout;
+
+    /**
+     * Constructor.
+     * 
+     * @param handle    he handle to the Vulkan graphics pipeline object
+     * @param device    the physical device this swap chain belongs to
+     * @param layout    the pipeline layout
+     */
+    GraphicsPipeline(VkPipeline handle, std::shared_ptr<LogicalDevice> device, std::shared_ptr<PipelineLayout> layout);
+
+
+    friend class GraphicsPipelineBuilder;
 };
 
 /**

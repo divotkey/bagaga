@@ -32,6 +32,10 @@ add_executable(VulkanTest
         ../common/vlk/PipelineLayout.cpp
         ../common/vlk/ShaderStage.cpp
         ../common/vlk/GraphicsPipeline.cpp
+        ../common/vlk/Framebuffer.cpp
+        ../common/vlk/CommandPool.cpp
+        ../common/vlk/CommandBuffer.cpp
+        ../common/vlk/Semaphore.cpp
         ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp
         main.cpp 

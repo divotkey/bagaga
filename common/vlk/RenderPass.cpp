@@ -52,7 +52,7 @@ RenderPassBuilder& RenderPassBuilder::ColorAttachmentFormat(VkFormat format)
     return *this;
 }
 
-RenderPassBuilder& RenderPassBuilder::CooseColorAttachmentFormat(SwapChain & swapChain)
+RenderPassBuilder& RenderPassBuilder::ChooseColorAttachmentFormat(SwapChain & swapChain)
 {
     return ColorAttachmentFormat(swapChain.GetImageFormat());
 }
@@ -98,5 +98,5 @@ unique_ptr<RenderPass> RenderPassBuilder::Build(shared_ptr<LogicalDevice> device
             + to_string(res));
     }
 
-    return std::make_unique<RenderPass>(renderPass, device);    
+    return std::unique_ptr<RenderPass>(new RenderPass(renderPass, device));    
 }

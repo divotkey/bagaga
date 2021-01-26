@@ -184,7 +184,7 @@ unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(shared_ptr<LogicalDe
         throw runtime_error("failed to create graphics pipeline!");
     }
 
-    return make_unique<GraphicsPipeline>(handle, device, pipelineLayout);
+    return unique_ptr<GraphicsPipeline>(new GraphicsPipeline(handle, device, pipelineLayout));
 }
 
 void GraphicsPipelineBuilder::ValidateConfiguration() const

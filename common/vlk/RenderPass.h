@@ -20,12 +20,14 @@ class RenderPass final {
 public:
 
     /**
-     * Constructor.
-     * 
-     * @param handle    handle to the render pass object
-     * @param device    the logical vulkan device used to create this object
+     * Deleted copy constructor.
      */
-    RenderPass(VkRenderPass handle, std::shared_ptr<LogicalDevice> device);
+    RenderPass(const RenderPass &) = delete;
+
+    /**
+     * Deleted assignment operator.
+     */
+    RenderPass & operator =(const RenderPass &) = delete;
 
     /**
      * Destructor.
@@ -54,6 +56,16 @@ private:
 
     /** The logical Vulkan device used to create this render pass object. */
     std::shared_ptr<LogicalDevice> device;
+
+    /**
+     * Constructor.
+     * 
+     * @param handle    handle to the render pass object
+     * @param device    the logical vulkan device used to create this object
+     */
+    RenderPass(VkRenderPass handle, std::shared_ptr<LogicalDevice> device);
+
+    friend class RenderPassBuilder;
 };
 
 class RenderPassBuilder {
@@ -78,7 +90,7 @@ public:
      * @param swapChain the swap chain
      * @return reference to this builder for method chaining
      */
-    RenderPassBuilder& CooseColorAttachmentFormat(SwapChain & swapChain);
+    RenderPassBuilder& ChooseColorAttachmentFormat(SwapChain & swapChain);
 
     /**
      * Resets this builder to its initial condition.

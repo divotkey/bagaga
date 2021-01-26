@@ -151,12 +151,12 @@ SwapChainBuilder & SwapChainBuilder::ImageExtent(uint32_t width, uint32_t height
     return *this;
 }
 
-SwapChainBuilder & SwapChainBuilder::CooseImageExtend(const VkPhysicalDevice device, VkSurfaceKHR surface, int fbw, int fbh)
+SwapChainBuilder & SwapChainBuilder::ChooseImageExtend(const VkPhysicalDevice device, VkSurfaceKHR surface, int fbw, int fbh)
 {
-    return CooseImageExtend(PhysicalDevice(device), surface, fbw, fbh);
+    return ChooseImageExtend(PhysicalDevice(device), surface, fbw, fbh);
 }
 
-SwapChainBuilder & SwapChainBuilder::CooseImageExtend(const PhysicalDevice & device, VkSurfaceKHR surface, int fbw, int fbh)
+SwapChainBuilder & SwapChainBuilder::ChooseImageExtend(const PhysicalDevice & device, VkSurfaceKHR surface, int fbw, int fbh)
 {
     auto capabilities = device.GetSurfaceCapabilities(surface);
     if (capabilities.currentExtent.width != (numeric_limits<uint32_t>::max)()) {
@@ -182,7 +182,7 @@ SwapChainBuilder & SwapChainBuilder::ImageCount(uint32_t cnt)
     return *this;
 }
 
-SwapChainBuilder & SwapChainBuilder::CooseImageCount(const PhysicalDevice & device, VkSurfaceKHR surface)
+SwapChainBuilder & SwapChainBuilder::ChooseImageCount(const PhysicalDevice & device, VkSurfaceKHR surface)
 {
     auto capabilities = device.GetSurfaceCapabilities(surface);
 
@@ -199,7 +199,7 @@ SwapChainBuilder & SwapChainBuilder::Transform(VkSurfaceTransformFlagBitsKHR tx)
     return *this;
 }
 
-SwapChainBuilder & SwapChainBuilder::CooseTransform(const PhysicalDevice & device, VkSurfaceKHR surface)
+SwapChainBuilder & SwapChainBuilder::ChooseTransform(const PhysicalDevice & device, VkSurfaceKHR surface)
 {
     return Transform(device.GetSurfaceCapabilities(surface).currentTransform);
 }
@@ -207,9 +207,9 @@ SwapChainBuilder & SwapChainBuilder::CooseTransform(const PhysicalDevice & devic
 SwapChainBuilder & SwapChainBuilder::ChooseConfiguration(const PhysicalDevice & device, VkSurfaceKHR surface, int fbw, int fbh)
 {
     ChooseSurfaceFormat(device, surface);
-    CooseImageExtend(device, surface, fbw, fbh);
-    CooseImageCount(device, surface);
-    CooseTransform(device, surface);
+    ChooseImageExtend(device, surface, fbw, fbh);
+    ChooseImageCount(device, surface);
+    ChooseTransform(device, surface);
     return *this;
 }
 
@@ -268,5 +268,5 @@ unique_ptr<SwapChain> SwapChainBuilder::Build(shared_ptr<LogicalDevice> device, 
             + to_string(res));
     }
 
-    return make_unique<SwapChain>(handle, device, imageFormat, extent);
+    return unique_ptr<SwapChain>(new SwapChain(handle, device, imageFormat, extent));
 }

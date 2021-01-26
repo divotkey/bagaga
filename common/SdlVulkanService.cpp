@@ -240,7 +240,7 @@ void SdlVulkanService::CreateRenderPass()
     assert(swapChain);
 
     renderPass = RenderPassBuilder()
-        .CooseColorAttachmentFormat(*swapChain)        
+        .ChooseColorAttachmentFormat(*swapChain)        
         .Build(logicalDevice);
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created render pass object");

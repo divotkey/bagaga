@@ -10,7 +10,6 @@
 // Vulkan includes
 #include <vulkan/vulkan.h>
 
-
 /**
  * Utility class used to build blend attachment state structures.
  */
@@ -147,7 +146,7 @@ public:
     ColorBlendStateInfo & operator= (const ColorBlendStateInfo & rhs);
 
     /**
-     * Implicit conversion to Vulkan handle
+     * Implicit conversion to Vulkan VkPipelineColorBlendStateCreateInfo structure.
      */
     operator VkPipelineColorBlendStateCreateInfo() const { 
         return GetInfo();
