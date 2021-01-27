@@ -21,8 +21,12 @@
 #include "vlk/QueueIndexFinder.h"
 #include "vlk/LogicalDevice.h"
 #include "vlk/SwapChain.h"
+#include "vlk/Framebuffer.h"
 #include "vlk/RenderPass.h"
 #include "vlk/GraphicsPipeline.h"
+#include "vlk/CommandPool.h"
+#include "vlk/CommandBuffer.h"
+#include "vlk/Semaphore.h"
 #include "vlk/VertexInputInfo.h"
 #include "vlk/InputAssembly.h"
 #include "vlk/ViewportState.h"
@@ -79,6 +83,9 @@ void SdlVulkanService::OnStartup()
         CreateSwapChain();    
         CreateRenderPass();
         CreateGraphicsPipeline();
+        CreateFramebuffers();
+        CreateCommandBuffers();
+        CreateSemaphores();
     } catch (...) {
         Cleanup();
         throw;
@@ -93,22 +100,39 @@ void SdlVulkanService::OnShutdown()
 
 void SdlVulkanService::OnUpdate() 
 {
+        // std::optional<uint32_t> AcquireNextImage(VkSemaphore semaphore = VK_NULL_HANDLE, uint64_t timeout = UINT64_MAX);
 
+    auto imageIndex = swapChain->AcquireNextImage(*imageAvailableSemaphore);
+    if(!imageIndex.has_value()) {
+        SDL_LogInfo(SDL_LOG_CATEGORY_VIDEO, 
+            "Aquire next image from swap chain failed");
+
+        return;
+    }
+
+    logicalDevice->GetGraphicsQueue().ClearWaitSemaphores();
+    logicalDevice->GetGraphicsQueue().AddWaitSemaphore(imageAvailableSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+    logicalDevice->GetGraphicsQueue().ClearSignalSemaphores();
+    logicalDevice->GetGraphicsQueue().AddSignalSemaphore(renderFinishedSemaphore);
+    logicalDevice->GetGraphicsQueue().SubmitCommandBuffer(*commandBuffers.at(imageIndex.value()));
+
+
+    logicalDevice->GetPresentQueue().WaitIdle();
+    logicalDevice->GetPresentQueue().ClearWaitSemaphores();
+    logicalDevice->GetPresentQueue().AddWaitSemaphore(renderFinishedSemaphore);
+    logicalDevice->GetPresentQueue().Present(*swapChain, imageIndex.value());
 }
 
 void SdlVulkanService::Cleanup()
 {
-    if (renderPass) {
-        renderPass = nullptr;
-    }
-
-    if (swapChain) {
-        swapChain = nullptr;
-    }
-
-    if (logicalDevice) {
-        logicalDevice = nullptr;
-    }
+    imageAvailableSemaphore = nullptr;
+    renderFinishedSemaphore = nullptr;
+    commandBuffers.clear();
+    commandPool = nullptr;
+    framebuffers.clear();
+    renderPass = nullptr;
+    swapChain = nullptr;
+    logicalDevice = nullptr;
 
     if (surface) {
         vkDestroySurfaceKHR(*instance, surface, nullptr);
@@ -240,7 +264,29 @@ void SdlVulkanService::CreateRenderPass()
     assert(swapChain);
 
     renderPass = RenderPassBuilder()
-        .ChooseColorAttachmentFormat(*swapChain)        
+        .AddAttachment(
+            AttachmentBuilder()
+            .Format(swapChain->GetImageFormat())
+            .Samples(VK_SAMPLE_COUNT_1_BIT)
+            .LoadOp(VK_ATTACHMENT_LOAD_OP_CLEAR)
+            .StoreOp(VK_ATTACHMENT_STORE_OP_STORE)
+            .InitialLayout(VK_IMAGE_LAYOUT_UNDEFINED)
+            .FinalLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+            .Build())
+        .AddSubpass(
+            SubpassBuilder()
+            .PipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS)
+            .AddColorAttachment(0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+            .Build())
+        .AddSubpassDependency(
+            SubpassDependencyBuilder()
+            .SrcSubpass(VK_SUBPASS_EXTERNAL)
+            .SrcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
+            .SrcAccessMask(0)
+            .DstSubpass(0)
+            .DstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
+            .DstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)
+            .Build())  
         .Build(logicalDevice);
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created render pass object");
@@ -308,13 +354,7 @@ void SdlVulkanService::CreateGraphicsPipeline()
         PipelineLayoutBuilder()
         .Build(logicalDevice));
 
-
     builder.RenderPass(*renderPass, 0);
-
-            // ShaderModuleBuilder()
-            // .Code(kVertexShader)
-            // .Build(logicalDevice))
-
 
     builder.AddShaderStage(
         ShaderStageBuilder()
@@ -338,6 +378,51 @@ void SdlVulkanService::CreateGraphicsPipeline()
 
     graphicsPipeline = builder.Build(logicalDevice);
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created graphics pipeline object");
+}
+
+void SdlVulkanService::CreateFramebuffers()
+{
+    FramebufferBuilder fbBuilder;
+    fbBuilder.RenderPass(*renderPass);
+    fbBuilder.ChooseDimension(*swapChain).Layers(1);
+    for (auto imageView : swapChain->GetImageViews()) {
+        fbBuilder.ClearAttachments();
+        fbBuilder.AddAttachment(imageView);
+        framebuffers.push_back(fbBuilder.Build(logicalDevice));
+    }
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created framebuffer objects");
+}
+
+void SdlVulkanService::CreateCommandBuffers()
+{
+    commandPool = CommandPoolBuilder()
+        .QueueFamilyIndex(logicalDevice->GetGraphicsQueueIndex())
+        .Build(logicalDevice);
+
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created command pool");
+
+    commandBuffers = commandPool->CreateCommandBuffers(framebuffers.size());
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created command buffers");
+
+    for (size_t i = 0; i < framebuffers.size(); ++i) {
+        auto & cmdBuf = *commandBuffers[i];
+        cmdBuf.Begin();
+        cmdBuf.SetRenderArea(swapChain->GetImageWidth(), swapChain->GetImageHeight(), 0, 0);
+        cmdBuf.BeginRenderPass(*renderPass, *framebuffers[i]);
+        cmdBuf.BindPipeline(*graphicsPipeline, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        cmdBuf.Draw(3, 1, 0, 0);
+        cmdBuf.EndRenderPass();
+        cmdBuf.End();
+    }
+
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully recorded command buffers");
+}
+
+void SdlVulkanService::CreateSemaphores()
+{
+    imageAvailableSemaphore = Semaphore::Create(logicalDevice);
+    renderFinishedSemaphore = Semaphore::Create(logicalDevice);
+    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created semaphore objects");
 }
 
 void SdlVulkanService::CreateSurface() 

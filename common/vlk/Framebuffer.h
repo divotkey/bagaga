@@ -36,6 +36,21 @@ public:
      */
     Framebuffer & operator =(const Framebuffer &) = delete;
 
+    /**
+     * Returns the handle to the logical device.
+     * 
+     * @return the framebuffer handle
+     */
+    VkFramebuffer GetHandle() const {
+        return framebuffer;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkFramebuffer() const { 
+        return GetHandle();
+    }
 
 private:
     /** The handle of framebuffer object. */
@@ -67,7 +82,13 @@ public:
      */
     FramebufferBuilder();
 
-    FramebufferBuilder& Renderpass(VkRenderPass renderPass);
+    /**
+     * Specifies what render passes the framebuffer will be compatible with.
+     * 
+     * @param renerPass the handle to the render pass object
+     * @return reference to this builder used for method chaining
+     */
+    FramebufferBuilder& RenderPass(VkRenderPass renderPass);
 
     FramebufferBuilder& Flags(VkFramebufferCreateFlags flags);
     FramebufferBuilder& Width(uint32_t w);
@@ -75,6 +96,14 @@ public:
     FramebufferBuilder& Layers(uint32_t l);
     FramebufferBuilder& AddAttachment(VkImageView attachment);
     FramebufferBuilder& AddAttachments(const std::vector<VkImageView> & attachments);
+
+    /**
+     * Removes all added attachments from the current configuration.
+     * 
+     * @return reference to this builder used for method chaining
+     */
+    FramebufferBuilder& ClearAttachments();
+
 
     /**
      * Sets the width and height of the frame buffer to build.
@@ -85,8 +114,6 @@ public:
      * @return reference to this builder used for method chaining
      */
     FramebufferBuilder& ChooseDimension(const SwapChain & swapChain);
-
-    FramebufferBuilder& ChooseConfiguration(const SwapChain & swapChain);
 
     /**
      * Resets this builder to its initial condition.

@@ -158,21 +158,21 @@ unique_ptr<LogicalDevice> LogicalDeviceBuilder::Build(VkPhysicalDevice device, V
         result->logicalDevice, 
         queueIndexFinder.GetGraphicsFamily(), 
         0, 
-        &result->graphicsQueue);
+        &result->graphicsQueue.queue);
 
     // Fetch present queue.
     vkGetDeviceQueue(
         result->logicalDevice, 
         queueIndexFinder.GetPresentFamily(), 
         0, 
-        &result->presentQueue);
+        &result->presentQueue.queue);
 
     // Fetch compute queue.
     vkGetDeviceQueue(
         result->logicalDevice, 
         queueIndexFinder.GetComputeFamily(), 
         0, 
-        &result->computeQueue);
+        &result->computeQueue.queue);
 
 
     result->graphicsQueueIdx = queueIndexFinder.GetGraphicsFamily();

@@ -20,12 +20,14 @@ class CommandPool : public std::enable_shared_from_this<CommandPool> {
 public:
 
     /**
-     * Constructor.
-     * 
-     * @param handle    the handle to the command pool
-     * @param device    the physical device this command pool object belongs to
+     * Deleted copy constructor.
      */
-    CommandPool(VkCommandPool handle, std::shared_ptr<LogicalDevice> device);
+    CommandPool(const CommandPool &) = delete;
+
+    /**
+     * Deleted assignment operator.
+     */
+    CommandPool & operator =(const CommandPool &) = delete;
 
     /**
      * Destructor.
@@ -66,7 +68,15 @@ private:
      */
     void Free(CommandBuffer & cmdBuf);
 
+    /**
+     * Constructor.
+     * 
+     * @param handle    the handle to the command pool
+     * @param device    the physical device this command pool object belongs to
+     */
+    CommandPool(VkCommandPool handle, std::shared_ptr<LogicalDevice> device);
 
+    friend class CommandPoolBuilder;
     friend class CommandBuffer;
 };
 

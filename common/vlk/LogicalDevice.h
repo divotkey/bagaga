@@ -13,6 +13,7 @@
 #include <vulkan/vulkan.h>
 
 // Local includes
+#include "Queue.h"
 #include "NameList.h"
 
 // Forward declaration.
@@ -44,20 +45,11 @@ public:
     LogicalDevice& operator=(const LogicalDevice&) = delete;
 
     /**
-     * Returns the handle to the logical device.
-     * 
-     * @return the device handle
-     */
-    VkDevice GetHandle() const {
-        return logicalDevice;
-    }
-
-    /**
      * Returns the graphics queue of this logical device.
      * 
      * @return the graphics queue
      */
-    VkQueue GetGraphicsQueue() {
+    Queue & GetGraphicsQueue() {
         return graphicsQueue;
     }
 
@@ -75,7 +67,7 @@ public:
      * 
      * @return the present queue
      */
-    VkQueue GetPresentQueue() { 
+    Queue &  GetPresentQueue() { 
         return presentQueue;
     }
 
@@ -93,7 +85,7 @@ public:
      * 
      * @return the compute queue
      */
-    VkQueue GetComputeQueue() { 
+    Queue & GetComputeQueue() { 
         return computeQueue;
     }
 
@@ -102,7 +94,7 @@ public:
      * 
      * @return the index of the compute queue
      */
-    uint32_t GEtComputeQueueIndex() const {
+    uint32_t GetComputeQueueIndex() const {
         return computeQueueIdx;
     }
 
@@ -112,6 +104,15 @@ public:
      * @return `true` if graphics and present queue are identical
      */
     bool IsGraphicsAndPresentQueueIdentical() const;
+
+    /**
+     * Returns the handle to the logical device.
+     * 
+     * @return the device handle
+     */
+    VkDevice GetHandle() const {
+        return logicalDevice;
+    }
 
     /**
      * Implicit conversion to Vulkan handle
@@ -126,13 +127,13 @@ private:
     VkDevice logicalDevice;
 
     /** The vulkan graphics queue of this logical device. */
-    VkQueue graphicsQueue;
+    Queue graphicsQueue;
 
     /** The vulkan presentation queue of this logical device. */
-    VkQueue presentQueue;
+    Queue presentQueue;
 
     /** The vulkan compute queue of this logical device. */
-    VkQueue computeQueue;
+    Queue computeQueue;
 
     /** The index of the graphics queue of the physical device. */
     uint32_t graphicsQueueIdx;

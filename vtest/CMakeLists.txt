@@ -36,6 +36,7 @@ add_executable(VulkanTest
         ../common/vlk/CommandPool.cpp
         ../common/vlk/CommandBuffer.cpp
         ../common/vlk/Semaphore.cpp
+        ../common/vlk/Queue.cpp
         ../common/vlk/SdlVulkanLogger.cpp
         ../common/SdlVulkanService.cpp
         main.cpp 

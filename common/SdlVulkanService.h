@@ -23,6 +23,10 @@ class LogicalDevice;
 class SwapChain;
 class RenderPass;
 class GraphicsPipeline;
+class Framebuffer;
+class CommandPool;
+class CommandBuffer;
+class Semaphore;
 
 class SdlVulkanService : public astu::UpdatableBaseService {
 public:
@@ -82,6 +86,18 @@ private:
 
     /** The graphics pipeline. */
     std::unique_ptr<GraphicsPipeline> graphicsPipeline;
+
+    /** The framebuffers for the swapchain images. */
+    std::vector<std::unique_ptr<Framebuffer>> framebuffers;
+
+    /** Hold the comands to be sumitted to the queues. */
+    std::vector<std::unique_ptr<CommandBuffer>> commandBuffers;
+
+    /** Manages the memory used for command buffers. */
+    std::shared_ptr<CommandPool> commandPool;
+
+    std::shared_ptr<Semaphore> imageAvailableSemaphore;
+    std::shared_ptr<Semaphore> renderFinishedSemaphore;
 
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
@@ -147,6 +163,21 @@ private:
      * Creates the graphics pipeline.
      */
     void CreateGraphicsPipeline();
+
+    /**
+     * Creates framebuffers for the swap chain immages.
+     */
+    void CreateFramebuffers();
+
+    /**
+     * Create the command pool and command buffer objects. 
+     */
+    void CreateCommandBuffers();
+    
+    /**
+     * Creates the required semaphore objects. 
+     */
+    void CreateSemaphores();
 
     /**
      * Rates a physical device.

@@ -121,7 +121,7 @@ shared_ptr<CommandPool> CommandPoolBuilder::Build(std::shared_ptr<LogicalDevice>
         throw std::runtime_error("Failed to create command pool, error" + to_string(res));
     }
 
-    return make_shared<CommandPool>(handle, device);
+    return shared_ptr<CommandPool>(new CommandPool(handle, device));
 }
 
 void CommandPoolBuilder::ValidateConfiguration()

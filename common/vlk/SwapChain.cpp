@@ -63,6 +63,32 @@ SwapChain::~SwapChain()
     vkDestroySwapchainKHR(*device, swapChain, nullptr);
 }
 
+std::optional<uint32_t> SwapChain::AcquireNextImage(VkSemaphore semaphore, uint64_t timeout)
+{
+    uint32_t index;
+    VkResult res = vkAcquireNextImageKHR(*device, swapChain, timeout, semaphore, VK_NULL_HANDLE, &index);
+    if (res < 0) {
+        throw std::runtime_error("Acquire next image from swap chain failed, error " + to_string(res));
+    }
+
+    optional<uint32_t> result;
+    switch (res) {
+        case VK_SUCCESS:
+        case VK_SUBOPTIMAL_KHR:
+            result = index;
+            break;
+
+        case VK_TIMEOUT:
+        case VK_NOT_READY:
+            break;
+
+    default:
+        throw std::runtime_error("Acquire next image from swap chain failed, error " + to_string(res));
+    }
+
+    return result;
+}
+
 VkImageView SwapChain::CreateImageView(const VkImage& image) const
 {
     VkImageViewCreateInfo createInfo{};
@@ -187,7 +213,7 @@ SwapChainBuilder & SwapChainBuilder::ChooseImageCount(const PhysicalDevice & dev
     auto capabilities = device.GetSurfaceCapabilities(surface);
 
     uint32_t cnt = capabilities.minImageCount + 1;
-    if(capabilities.maxImageCount > 0 && capabilities.maxImageCount > cnt) {
+    if(capabilities.maxImageCount > 0 && cnt > capabilities.maxImageCount) {
         cnt = capabilities.maxImageCount;
     }
     return ImageCount(cnt);

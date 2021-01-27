@@ -128,6 +128,14 @@ public:
     void SetRenderArea(uint32_t w, uint32_t h, int32_t ox, int32_t oy);
 
     /**
+     * Binds a pipeline object to this command buffer.
+     * 
+     * @param pipeline  the handle to the pipeline object
+     * @param bindPoint specifies to which bind point the pipelineis bound
+     */
+    void BindPipeline(VkPipeline pipeline, VkPipelineBindPoint bindPoint);
+
+    /**
      * Records a non-indexed draw.
      * 
      * @param vertexCount   the number of vertices to draw  

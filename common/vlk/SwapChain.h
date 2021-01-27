@@ -6,6 +6,7 @@
 // C++ Standard Library includes
 #include <memory>
 #include <vector>
+#include <optional>
 
 // Vulkan includes
 #include <vulkan/vulkan.h>
@@ -83,6 +84,33 @@ public:
         return imageViews;
     }
 
+    /**
+     * Returns the number of images (and image views).
+     * 
+     * @return the number of images
+     */
+    size_t GetNumImages() const {
+        return images.size();
+    }
+
+    std::optional<uint32_t> AcquireNextImage(VkSemaphore semaphore = VK_NULL_HANDLE, uint64_t timeout = UINT64_MAX);
+
+    /**
+     * Returns the handle to swap chain object.
+     * 
+     * @return the swap chain handle
+     */
+    VkSwapchainKHR GetHandle() const {
+        return swapChain;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkSwapchainKHR() const { 
+        return GetHandle();
+    }    
+
 private:
     /** The handle of the swap chain. */
     VkSwapchainKHR swapChain;
@@ -102,6 +130,9 @@ private:
     /** The resolution of the swap chain images. */
     VkExtent2D extent;
     
+    /** Indicates that 
+    bool nextImageTimeout;
+
 
     /**
      * Creates an image view of an image.

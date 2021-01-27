@@ -48,7 +48,7 @@ FramebufferBuilder& FramebufferBuilder::Flags(VkFramebufferCreateFlags flags)
 }
 
 
-FramebufferBuilder& FramebufferBuilder::Renderpass(VkRenderPass renderPass)
+FramebufferBuilder& FramebufferBuilder::RenderPass(VkRenderPass renderPass)
 {
     assert(renderPass != VK_NULL_HANDLE);
 
@@ -65,6 +65,12 @@ FramebufferBuilder& FramebufferBuilder::AddAttachment(VkImageView attachment)
 FramebufferBuilder& FramebufferBuilder::AddAttachments(const std::vector<VkImageView> & attachments)
 {
     this->attachments.insert(this->attachments.end(), attachments.begin(), attachments.end());
+    return *this;
+}
+
+FramebufferBuilder& FramebufferBuilder::ClearAttachments()
+{
+    attachments.clear();
     return *this;
 }
 
@@ -90,13 +96,6 @@ FramebufferBuilder& FramebufferBuilder::ChooseDimension(const SwapChain & swapCh
 {
     Width(swapChain.GetImageWidth());
     Height(swapChain.GetImageHeight());
-    return *this;
-}
-
-FramebufferBuilder& FramebufferBuilder::ChooseConfiguration(const SwapChain & swapChain)
-{
-    ChooseDimension(swapChain);
-    AddAttachments(swapChain.GetImageViews());
     return *this;
 }
 

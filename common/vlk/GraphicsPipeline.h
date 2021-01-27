@@ -42,6 +42,22 @@ public:
      */
     virtual ~GraphicsPipeline();
 
+    /**
+     * Returns the handle to the graphics pileline object.
+     * 
+     * @return the graphics pipeline handle
+     */
+    VkPipeline GetHandle() const {
+        return pipeline;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkPipeline() const { 
+        return GetHandle();
+    }
+
 private:
     /** The handle to the Vulkan graphics pipeline object. */
     VkPipeline pipeline;

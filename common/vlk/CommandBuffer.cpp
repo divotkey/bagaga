@@ -78,10 +78,14 @@ void CommandBuffer::SetRenderArea(uint32_t w, uint32_t h, int32_t ox, int32_t oy
     renderArea.extent.height = h;
 }
 
-
 void CommandBuffer::EndRenderPass()
 {
     vkCmdEndRenderPass(commandBuffer);
+}
+
+void CommandBuffer::BindPipeline(VkPipeline pipeline, VkPipelineBindPoint bindPoint)
+{
+    vkCmdBindPipeline(commandBuffer, bindPoint, pipeline);
 }
 
 void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
