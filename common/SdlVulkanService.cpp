@@ -52,7 +52,7 @@ const std::vector<const char*> SdlVulkanService::kDeviceExtensions = {
 SdlVulkanService::SdlVulkanService(bool debug, int priority)
     : UpdatableBaseService("SDL Vulkan", priority)
     , enableValidationLayers(debug)
-    , debugMessenger(nullptr)
+    , debugMessenger(VK_NULL_HANDLE)
 {
     // Intentioniall left empty.
 }
@@ -136,12 +136,12 @@ void SdlVulkanService::Cleanup()
 
     if (surface) {
         vkDestroySurfaceKHR(*instance, surface, nullptr);
-        surface = nullptr;
+        surface = VK_NULL_HANDLE;
     }
 
     if (debugMessenger) {
         DestroyDebugUtilsMessengerEXT(debugMessenger);
-        debugMessenger = nullptr;
+        debugMessenger = VK_NULL_HANDLE;
     }
 
     physicalDevice = nullptr;

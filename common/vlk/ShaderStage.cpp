@@ -102,6 +102,7 @@ ShaderStageInfo & ShaderStageInfo::operator= (const ShaderStageInfo & rhs)
     shaderModule = rhs.shaderModule;
     entryPoint = rhs.entryPoint;
     UpdateAndValidate();
+    return *this;
 }
 
 void ShaderStageInfo::UpdateAndValidate()

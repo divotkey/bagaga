@@ -53,6 +53,7 @@ ViewportBuilder & ViewportBuilder::Width(float width)
     }
 
     this->width = width;
+    return *this;
 }
 
 ViewportBuilder & ViewportBuilder::Height(float height)
@@ -63,6 +64,7 @@ ViewportBuilder & ViewportBuilder::Height(float height)
     }
 
     this->height = height;
+    return *this;
 }
 
 ViewportBuilder & ViewportBuilder::StartX(float x)
@@ -149,6 +151,7 @@ ViewportStateInfo & ViewportStateInfo::operator= (const ViewportStateInfo & rhs)
     viewports = rhs.viewports;
     scissors = rhs.scissors;
     UpdateAndValidate();
+    return *this;
 }
 
 

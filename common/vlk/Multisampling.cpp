@@ -58,6 +58,7 @@ MultisamplingBuilder& MultisamplingBuilder::Reset()
     pSampleMask = nullptr;
     alphaToCoverage = false;
     alphaToOne = false;
+    return *this;
 }
 
 VkPipelineMultisampleStateCreateInfo MultisamplingBuilder::Build() const

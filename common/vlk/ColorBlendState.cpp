@@ -122,6 +122,7 @@ ColorBlendStateInfo & ColorBlendStateInfo::operator= (const ColorBlendStateInfo 
     colorBlendState = rhs.colorBlendState;
     attachments = rhs.attachments;
     UpdateAndValidate();
+    return *this;
 }
 
 void ColorBlendStateInfo::UpdateAndValidate()

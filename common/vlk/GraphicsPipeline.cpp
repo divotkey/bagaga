@@ -54,6 +54,7 @@ GraphicsPipelineBuilder & GraphicsPipelineBuilder::Reset()
     basePipeline = VK_NULL_HANDLE;
     basePipelineIndex = -1;
     shaderStages.clear();
+    return *this;
 }
 
 GraphicsPipelineBuilder & GraphicsPipelineBuilder::VertexInputInfo(const VkPipelineVertexInputStateCreateInfo & info)
