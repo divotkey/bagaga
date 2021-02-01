@@ -22,6 +22,9 @@ add_executable(VulkanTest
         ../common/vlk/SwapChain.cpp
         ../common/vlk/RenderPass.cpp
         ../common/vlk/VertexInputInfo.cpp
+        ../common/vlk/VertexDescription.cpp
+        ../common/vlk/Buffer.cpp
+        ../common/vlk/Memory.cpp
         ../common/vlk/InputAssembly.cpp
         ../common/vlk/ViewportState.cpp
         ../common/vlk/Rasterizer.cpp

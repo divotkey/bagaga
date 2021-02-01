@@ -113,6 +113,13 @@ public:
     std::vector<VkPresentModeKHR> GetPresentModes(VkSurfaceKHR surface) const;
 
     /**
+     * Retrieves the memory properties of this physical device.
+     * 
+     * @return the memory properties
+     */
+    VkPhysicalDeviceMemoryProperties GetMemoryProperties() const;
+
+    /**
      * Returns the type of this physical device.
      * 
      * @return the device type;

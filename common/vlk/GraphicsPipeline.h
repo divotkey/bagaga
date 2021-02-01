@@ -14,6 +14,7 @@
 // Local includes
 #include "ViewportState.h"
 #include "ColorBlendState.h"
+#include "VertexInputInfo.h"
 #include "ShaderStage.h"
 
 // Forward declaration
@@ -62,7 +63,7 @@ private:
     /** The handle to the Vulkan graphics pipeline object. */
     VkPipeline pipeline;
 
-    /** The logical device this swap chain belongs to. */
+    /** The logical device this graphics pipeline belongs to. */
     std::shared_ptr<LogicalDevice> device;
 
     /** The pipeline layout. */
@@ -72,11 +73,10 @@ private:
      * Constructor.
      * 
      * @param handle    he handle to the Vulkan graphics pipeline object
-     * @param device    the physical device this swap chain belongs to
+     * @param device    the logical device this graphics pipeline belongs to
      * @param layout    the pipeline layout
      */
     GraphicsPipeline(VkPipeline handle, std::shared_ptr<LogicalDevice> device, std::shared_ptr<PipelineLayout> layout);
-
 
     friend class GraphicsPipelineBuilder;
 };
@@ -93,13 +93,13 @@ public:
     GraphicsPipelineBuilder();
 
     /**
-     * Resets this builder to its initial condition.
+     * Specifies the format of the vertex data that will be passed to the vertex shader.
      * 
+     * @param info  the vertex info object
      * @return reference to this builder used for method chaining
      */
-    GraphicsPipelineBuilder & Reset();
+    GraphicsPipelineBuilder & VertexInputInfo(const VertexInputState & info);
 
-    GraphicsPipelineBuilder & VertexInputInfo(const VkPipelineVertexInputStateCreateInfo & info);
     GraphicsPipelineBuilder & InputAssembly(const VkPipelineInputAssemblyStateCreateInfo & info);
     GraphicsPipelineBuilder & ViewportState(const ViewportStateInfo & viewportState);
     GraphicsPipelineBuilder & Rasterizer(const VkPipelineRasterizationStateCreateInfo & info);
@@ -131,12 +131,25 @@ public:
     
     GraphicsPipelineBuilder & AddShaderStage(const ShaderStageInfo & stage);
 
+    /**
+     * Resets this builder to its initial condition.
+     * 
+     * @return reference to this builder used for method chaining
+     */
+    GraphicsPipelineBuilder & Reset();
 
+    /**
+     * Builds the graphics pipeline object according to the current configuration.
+     * 
+     * @param device    the logical device the graphics pipeline belongs to
+     * @return the newly created graphics pipeline object
+     * @throws std::runtime_exception in case the graphics pipeline object could not be created
+     */
     std::unique_ptr<GraphicsPipeline> Build(std::shared_ptr<LogicalDevice> device) const;
 
 private:
     /** Describes the format of the vertex data that will be passed to the vertex shader. */
-    std::optional<VkPipelineVertexInputStateCreateInfo> vertexInputInfo;
+    std::optional<VertexInputState> vertexInputInfo;
 
     /** Describes what kind of geometry will be rendered. */
     std::optional<VkPipelineInputAssemblyStateCreateInfo> inputAssembly;

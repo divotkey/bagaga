@@ -167,6 +167,14 @@ vector<VkPresentModeKHR> PhysicalDevice::GetPresentModes(VkSurfaceKHR surface) c
     return modes;
 }
 
+VkPhysicalDeviceMemoryProperties PhysicalDevice::GetMemoryProperties() const
+{
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(device, &memProperties);    
+
+    return memProperties;
+}
+
 vector<VkQueueFamilyProperties> PhysicalDevice::GetQueueFamilyProperties() const
 {
     uint32_t queueFamilyCount = 0;

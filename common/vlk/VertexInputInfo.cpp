@@ -9,26 +9,59 @@
 
 using namespace std;
 
+
+/////////////////////////////////////////////////
+/////// VertexInputState
+/////////////////////////////////////////////////
+
+VertexInputState::VertexInputState (
+    const VkPipelineVertexInputStateCreateInfo & vertexInputInfo,
+    const vector<VkVertexInputBindingDescription> & bindingDescriptions, 
+    const vector<VkVertexInputAttributeDescription> & attributeDescriptions)
+    : vertexInputInfo(vertexInputInfo)
+    , bindingDescriptions(bindingDescriptions)
+    , attributeDescriptions(attributeDescriptions)
+{
+    this->vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+    this->vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.empty() ? nullptr : bindingDescriptions.data();
+    this->vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+    this->vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.empty() ? nullptr : attributeDescriptions.data();
+}
+
+/////////////////////////////////////////////////
+/////// VertexInputInfoBuilder
+/////////////////////////////////////////////////
+
 VertexInputInfoBuilder::VertexInputInfoBuilder()
 {
     Reset();
 }
 
-VertexInputInfoBuilder & VertexInputInfoBuilder::Reset()
+VertexInputInfoBuilder& VertexInputInfoBuilder::AddVertexBindingDescription(VkVertexInputBindingDescription bindingDesc)
 {
+    bindingDescriptions.push_back(bindingDesc);
     return *this;
 }
 
-VkPipelineVertexInputStateCreateInfo VertexInputInfoBuilder::Build() const
+VertexInputInfoBuilder& VertexInputInfoBuilder::AddVertexAtttributeDescription(VkVertexInputAttributeDescription attributeDesc)
+{
+    attributeDescriptions.push_back(attributeDesc);
+    return *this;
+}
+
+VertexInputInfoBuilder & VertexInputInfoBuilder::Reset()
+{
+    bindingDescriptions.clear();
+    attributeDescriptions.clear();
+    flags = 0;
+    return *this;
+}
+
+VertexInputState VertexInputInfoBuilder::Build() const
 {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.flags = flags;
 
-    // TODO make configurable.
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
-
-    return vertexInputInfo;
+    return VertexInputState(vertexInputInfo, bindingDescriptions, attributeDescriptions);
 }

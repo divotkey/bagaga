@@ -29,6 +29,7 @@ GraphicsPipeline::~GraphicsPipeline()
     }
 }
 
+
 /////////////////////////////////////////////////
 /////// GraphicsPipelineBuilder
 /////////////////////////////////////////////////
@@ -57,7 +58,7 @@ GraphicsPipelineBuilder & GraphicsPipelineBuilder::Reset()
     return *this;
 }
 
-GraphicsPipelineBuilder & GraphicsPipelineBuilder::VertexInputInfo(const VkPipelineVertexInputStateCreateInfo & info)
+GraphicsPipelineBuilder & GraphicsPipelineBuilder::VertexInputInfo(const VertexInputState & info)
 {
     vertexInputInfo = info;
     return *this;
@@ -155,7 +156,7 @@ unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(shared_ptr<LogicalDe
     }
     pipelineInfo.pStages = stages.data();
 
-    pipelineInfo.pVertexInputState = &vertexInputInfo.value();
+    pipelineInfo.pVertexInputState = &vertexInputInfo.value().GetInfo();
     pipelineInfo.pInputAssemblyState = &inputAssembly.value();
     pipelineInfo.pViewportState = viewportState.value();
     pipelineInfo.pRasterizationState = &rasterizer.value();

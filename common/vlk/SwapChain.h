@@ -145,7 +145,7 @@ private:
      * Constructor.
      * 
      * @param handle    the swap chain handle
-     * @param device    the physical device this swap chain belongs to
+     * @param device    the logical device this swap chain belongs to
      * @param format    the image format of this swap chain
      * @param extent    the resolution of the swap chain images
      */
