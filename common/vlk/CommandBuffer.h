@@ -5,12 +5,14 @@
 
 // C++ Standard Library includes
 #include <memory>
+#include <vector>
 
 // Vulkan includes
 #include <vulkan/vulkan.h>
 
 // Forward declaration
 class CommandPool;
+class Buffer;
 
 /**
  * Wraps Vulkan command Buffer objects.
@@ -134,6 +136,22 @@ public:
      * @param bindPoint specifies to which bind point the pipelineis bound
      */
     void BindPipeline(VkPipeline pipeline, VkPipelineBindPoint bindPoint);
+
+    /**
+     * Binds vertex buffer to this command buffer for use in subsequent draw commands.
+     * 
+     * @param buffer    the buffer object containing vertex data
+     * @param offset    the offset of the first vertex to bind
+     */
+    void BindVertexBuffer(VkBuffer buffer, size_t offset = 0);
+
+    /**
+     * Binds vertex buffers to this command buffer for use in subsequent draw commands.
+     * 
+     * @param buffers   the buffer objects containing vertex data
+     */
+    void BindVertexBuffers(const std::vector<std::shared_ptr<Buffer>> & buffers);
+
 
     /**
      * Records a non-indexed draw.

@@ -9,6 +9,7 @@
 // Local includes
 #include "LogicalDevice.h"
 #include "CommandPool.h"
+#include "Buffer.h"
 #include "CommandBuffer.h"
 
 using namespace std;
@@ -86,6 +87,12 @@ void CommandBuffer::EndRenderPass()
 void CommandBuffer::BindPipeline(VkPipeline pipeline, VkPipelineBindPoint bindPoint)
 {
     vkCmdBindPipeline(commandBuffer, bindPoint, pipeline);
+}
+
+void CommandBuffer::BindVertexBuffer(VkBuffer buffer, size_t offset)
+{
+    VkDeviceSize bufferOffsets = static_cast<VkDeviceSize>(offset);
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &buffer, &bufferOffsets);
 }
 
 void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)

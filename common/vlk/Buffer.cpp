@@ -8,6 +8,7 @@
 
 // Local includes
 #include "LogicalDevice.h"
+#include "Memory.h"
 #include "Buffer.h"
 
 using namespace std;
@@ -30,12 +31,33 @@ Buffer::~Buffer()
     vkDestroyBuffer(*device, buffer, nullptr);
 }
 
+void Buffer::BindMemory(std::shared_ptr<Memory> memory, size_t offset)
+{
+    assert(memory);
+
+    if (this->memory) {
+        throw logic_error("Unable to bind device memory to buffer object, buffer already bound to device memory");
+    }
+
+    VkResult res = vkBindBufferMemory(*device, buffer, *memory, static_cast<VkDeviceSize>(offset));
+    if (res != VK_SUCCESS) {
+        throw runtime_error("Failed to bind device memory to buffer object, error " + to_string(res));
+    }
+
+    this->memory = memory;
+}
+
 VkMemoryRequirements Buffer::GetMemoryRequirements() const
 {
     VkMemoryRequirements result;
     vkGetBufferMemoryRequirements(*device, buffer, &result);
 
     return result;
+}
+
+void BindMemory(std::shared_ptr<Memory> memory, size_t offset)
+{
+
 }
 
 

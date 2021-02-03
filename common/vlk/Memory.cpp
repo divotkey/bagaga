@@ -4,6 +4,7 @@
 // C++ Standard Library includes
 #include <stdexcept>
 #include <cassert>
+#include <cstring>
 #include <string>
 
 // Local includes
@@ -23,7 +24,9 @@ Memory::Memory(VkDeviceMemory handle, std::shared_ptr<LogicalDevice> device)
     , device(device)
     , allocationSize(0)
     , mapped(false)
-    , data(nullptr)
+    , mappedData(nullptr)
+    , mappedSize(0)
+    , mappedOffset(0)
 {
     assert(memory);
     assert(this->device);
@@ -39,19 +42,26 @@ size_t Memory::GetSize() const
     return static_cast<size_t>(allocationSize);
 }
 
-void Memory::WriteData(const std::vector<unsigned char> data, size_t offset)
+void Memory::WriteData(const unsigned char* src, size_t numBytes, size_t offset, bool flush)
 {
-    auto data = Map(data.size(), offset);
+    auto dst = Map(numBytes, offset);
+
+    memcpy(dst, src, numBytes);
+    if (flush) {
+        Flush();
+    }
+
+    Unmap();
 }
 
 unsigned char* Memory::Map(size_t size, size_t offset)
 {
     if (mapped) {
-        throw logic_error("Unable to map memory object, because object is already mapped");
+        throw logic_error("Unable to map, memory object is already mapped");
     }
 
     if (size - offset > allocationSize) {
-        throws logic_error("Unable to map memory object, size/offset combination exceeds allocated memory");
+        throw logic_error("Unable to map memory object, size/offset combination exceeds allocated memory");
     }
 
     void *data;
@@ -66,21 +76,62 @@ unsigned char* Memory::Map(size_t size, size_t offset)
     if (res != VK_SUCCESS) {
         throw runtime_error("Failed to map memory object into application address space, error " + to_string(res));
     }
-    this->data = reinterpret_cast<unsigned char*>(data);
-
+    mappedData = reinterpret_cast<unsigned char*>(data);
+    mappedSize = size;
+    mappedOffset = offset;
     mapped = true;
-    return this->data;
+
+    return mappedData;
 }
 
 
 void Memory::Unmap()
 {
     if (!mapped) {
-        throw std::logic_error("Unable to unmap memory object, because object is not mapped");
+        throw logic_error("Unable to unmap, memory object is not mapped");
     }
     vkUnmapMemory(*device, memory);
     mapped = false;
-    data = nullptr;
+
+    mappedData = nullptr;
+    mappedSize = mappedOffset = 0;
+}
+
+void Memory::Flush()
+{
+    if (!mapped) {
+        throw logic_error("Unable to flush, memory object is not mapped");
+    }
+
+
+    VkMappedMemoryRange range{};
+    range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+    range.memory = memory;
+    range.offset = mappedOffset;
+    range.size = mappedSize;
+
+    VkResult res = vkFlushMappedMemoryRanges(*device, 1, &range);
+    if (res != VK_SUCCESS) {
+        throw runtime_error("Failed to flush memory object, error " + to_string(res));
+    }
+}
+
+size_t Memory::GetMappedOffset() const
+{
+    if (!mapped) {
+        throw logic_error("Unable to return mapped offset, memory object is not mapped");
+    }
+
+    return mappedOffset;
+}
+
+size_t Memory::GetMappedSize() const
+{
+    if (!mapped) {
+        throw logic_error("Unable to return mapped size, memory object is not mapped");
+    }
+
+    return mappedSize;
 }
 
 
@@ -125,8 +176,6 @@ uint32_t MemoryBuilder::FindMemoryType(
 
     throw runtime_error("Failed to find suitable memory type");
 }
-
-
 
 MemoryBuilder & MemoryBuilder::Reset()
 {

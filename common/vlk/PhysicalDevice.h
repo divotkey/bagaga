@@ -34,15 +34,6 @@ public:
     PhysicalDevice(VkPhysicalDevice device);
 
     /**
-     * Returns the handle to the physical device.
-     * 
-     * @return the device handle
-     */
-    VkPhysicalDevice GetHandle() const {
-        return device;
-    }
-
-    /**
      * Returns the names of available device extensions.
      * 
      * @return vector containing names of device extensions
@@ -184,6 +175,15 @@ public:
      */
     const VkPhysicalDeviceLimits & GetLimits() const {
         return GetProperties().limits;
+    }
+
+    /**
+     * Returns the handle to the physical device.
+     * 
+     * @return the device handle
+     */
+    VkPhysicalDevice GetHandle() const {
+        return device;
     }
 
     /**

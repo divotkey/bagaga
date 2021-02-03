@@ -4,6 +4,7 @@
 // C++ Standard Library includes
 #include <algorithm>
 #include <cassert>
+#include <vector>
 #include <set>
 #include <map>
 
@@ -14,6 +15,8 @@
 // Astu includes
 #include <VersionInfo.h>
 #include <SdlVideoService.h>
+#include <Vector2.h>
+#include <Vector3.h>
 
 // Local includes
 #include "vlk/SdlVulkanLogger.h"
@@ -28,6 +31,8 @@
 #include "vlk/CommandBuffer.h"
 #include "vlk/Semaphore.h"
 #include "vlk/VertexInputInfo.h"
+#include "vlk/Memory.h"
+#include "vlk/Buffer.h"
 #include "vlk/InputAssembly.h"
 #include "vlk/ViewportState.h"
 #include "vlk/Rasterizer.h"
@@ -40,6 +45,18 @@
 #include "SdlVulkanService.h"
 
 using namespace astu;
+
+
+struct Vertex {
+    Vector2<float> pos;
+    Vector3<float> col;
+};
+
+const std::vector<Vertex> vertices = {
+    {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+};
 
 const std::vector<const char*> SdlVulkanService::kValidationLayers = { 
     "VK_LAYER_KHRONOS_validation"
@@ -84,6 +101,7 @@ void SdlVulkanService::OnStartup()
         CreateRenderPass();
         CreateGraphicsPipeline();
         CreateFramebuffers();
+        CreateVertexBuffer();
         CreateCommandBuffers();
         CreateSemaphores();
     } catch (...) {
@@ -467,6 +485,12 @@ int SdlVulkanService::RatePhysicalDevice(const PhysicalDevice & device) const
 
     return score;   
 }
+
+void SdlVulkanService::CreateVertexBuffer()
+{
+
+}
+
 
 /////////////////////////////////////////////////
 /////// Proxy functions

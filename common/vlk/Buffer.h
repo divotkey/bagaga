@@ -13,6 +13,7 @@
 
 // Forward declaration
 class LogicalDevice;
+class Memory;
 
 
 /**
@@ -36,6 +37,13 @@ public:
      */
     virtual ~Buffer();
 
+    /**
+     * Binds device memory to this buffer object.
+     * 
+     * @param memory    the device memory
+     * @param offset    is the start offset of the region of memory
+     */
+    void BindMemory(std::shared_ptr<Memory> memory, size_t offset = 0);
 
     /**
      * Retrieves the memory requirements of this buffer.
@@ -44,12 +52,31 @@ public:
      */
     VkMemoryRequirements GetMemoryRequirements() const;
 
+    /**
+     * Returns the handle to the buffer object.
+     * 
+     * @return the buffer object handle
+     */
+    VkBuffer GetHandle() const {
+        return buffer;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkBuffer() const { 
+        return GetHandle();
+    }
+
 private:
     /** Handle to the Vulkan buffer object. */
     VkBuffer buffer;
 
     /** The logical device this buffer belongs to. */
     std::shared_ptr<LogicalDevice> device;
+
+    /** The device memory bound to this buffer. */
+    std::shared_ptr<Memory> memory;
 
     /**
      * Constructor.

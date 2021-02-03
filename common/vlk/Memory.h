@@ -46,16 +46,32 @@ public:
     /**
      * Writes the specified data to this memory object.
      * 
-     * @param data      the data to write into this memory object
+     * This method will automatically map and unmap this object.
+     * 
+     * @param src       the data to write into this memory object
      * @param offset    the offset within the memory object to start writing
+     * @param flush     whether to flush this memory object after writing
      * @throws std::logic_error in case this memory object is already mapped
      * @throws std::runtime_error in case this memory object could not be mapped
      */
-    void WriteData(const std::vector<unsigned char> data, size_t offset = 0);
+    void WriteData(const std::vector<unsigned char> src, size_t offset = 0, bool flush = false)
+    {
+        WriteData(src.data(), src.size(), offset, flush);
+    }
 
-
-    void WriteData(const unsigned char* src, size_t numBytes, size_t offset = 0);
-
+    /**
+     * Writes data to this memory object.
+     * 
+     * This method will automatically map and unmap this object.
+     * 
+     * @param data      pointer to source data 
+     * @param numBytes  the number of bytes to write
+     * @param offset    the offset within the memory object to start writing
+     * @param flush     whether to flush this memory object after writing
+     * @throws std::logic_error in case this memory object is already mapped
+     * @throws std::runtime_error in case this memory object could not be mapped
+     */
+    void WriteData(const unsigned char* src, size_t numBytes, size_t offset = 0, bool flush = false);
 
     /**
      * Maps this memory object to application address space.
@@ -86,6 +102,55 @@ public:
      */
     void Unmap();
 
+    /**
+     * Flushes this memory object.
+     * 
+     * @throws std::logic_error in case this memory object is currently not mapped
+     * @throws std::runtime_error in case this memory object could not be flushed
+     */
+    void Flush();
+
+    /**
+     * Returns the size of the mapped data.
+     * 
+     * @return the size in bytes
+     * @throws std::logic_error in case this memory object is currently not mapped
+     */
+    size_t GetMappedSize() const;
+
+    /**
+     * Returns the offset of the mapped data.
+     * 
+     * @return the offset
+     * @throws std::logic_error in case this memory object is currently not mapped
+     */
+    size_t GetMappedOffset() const;
+
+    /**
+     * Returns whether this memory object is currently mapped.
+     * 
+     * @return `true` if this memory object is mapped
+     */
+    bool isMapped() const {
+        return mapped;
+    }
+
+    /**
+     * Returns the handle to the memory object.
+     * 
+     * @return the memory object handle
+     */
+    VkDeviceMemory GetHandle() const {
+        return memory;
+    }
+
+    /**
+     * Implicit conversion to Vulkan handle
+     */
+    operator VkDeviceMemory() const { 
+        return GetHandle();
+    }
+
 private:
     /** Handle to the Vulkan device memory. */
     VkDeviceMemory memory;
@@ -100,7 +165,13 @@ private:
     bool mapped;
 
     /** Receives the application space address in case this object is currently mapped. */
-    unsigned char *data;
+    unsigned char *mappedData;
+
+    /** The number of bytes of the currently mapped data. */
+    uint32_t mappedSize;
+
+    /** The offset of the currently mapped data. */
+    uint32_t mappedOffset;
 
     /**
      * Constructor.
@@ -112,6 +183,7 @@ private:
 
     friend class MemoryBuilder;
 };
+
 
 /**
  * Utility class to create Memory objects.

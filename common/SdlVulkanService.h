@@ -27,6 +27,7 @@ class Framebuffer;
 class CommandPool;
 class CommandBuffer;
 class Semaphore;
+class Buffer;
 
 class SdlVulkanService : public astu::UpdatableBaseService {
 public:
@@ -98,6 +99,8 @@ private:
 
     std::shared_ptr<Semaphore> imageAvailableSemaphore;
     std::shared_ptr<Semaphore> renderFinishedSemaphore;
+
+    std::unique_ptr<Buffer> vertexBuffer;
 
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
@@ -178,6 +181,8 @@ private:
      * Creates the required semaphore objects. 
      */
     void CreateSemaphores();
+
+    void CreateVertexBuffer();
 
     /**
      * Rates a physical device.
