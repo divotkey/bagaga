@@ -12,7 +12,7 @@
 /**
  * Wraps Vulkan vertex input state descriptions structure and contains related data.
  */
-class VertexInputState {
+class VertexInputInfo {
 public:
 
     /**
@@ -22,11 +22,26 @@ public:
      * @param bindingDescriptions   the vertex input binding descriptions
      * @param attributeDescriptions the vertex input binding descriptions
      */
-    VertexInputState(
+    VertexInputInfo(
         const VkPipelineVertexInputStateCreateInfo & vertexInputInfo,
         const std::vector<VkVertexInputBindingDescription> & bindingDescriptions, 
         const std::vector<VkVertexInputAttributeDescription> & attributeDescriptions);
 
+    /**
+     * Copy constructor.
+     * 
+     * @param o the other instance
+     */
+    VertexInputInfo(const VertexInputInfo & o);
+
+
+    /**
+     * Copy assignment operator.
+     * 
+     * @param rhs   the right hand side
+     * @return reference to this instance
+     */
+    VertexInputInfo & operator= (const VertexInputInfo & rhs);
 
     /**
      * Returns the Vulkan vertex input state structure.
@@ -53,6 +68,9 @@ private:
 
     /** The vertex attribute descriptions. */
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+
+    void UpdateData();
 };
 
 /**
@@ -80,7 +98,7 @@ public:
      * @param attributeDesc   the vertex attribute description to add
      * @return reference to this builder used for method chaining
      */
-    VertexInputInfoBuilder& AddVertexAtttributeDescription(VkVertexInputAttributeDescription attributeDesc);
+    VertexInputInfoBuilder& AddVertexAttributeDescription(VkVertexInputAttributeDescription attributeDesc);
 
     /**
      * Resets this builder to its initial condition.
@@ -94,7 +112,7 @@ public:
      * 
      * @return the vertex input state
      */
-    VertexInputState Build() const;
+    VertexInputInfo Build() const;
 
 private:
     /** Reserved for future use. */

@@ -58,7 +58,7 @@ GraphicsPipelineBuilder & GraphicsPipelineBuilder::Reset()
     return *this;
 }
 
-GraphicsPipelineBuilder & GraphicsPipelineBuilder::VertexInputInfo(const VertexInputState & info)
+GraphicsPipelineBuilder & GraphicsPipelineBuilder::VertexInputState(const VertexInputInfo & info)
 {
     vertexInputInfo = info;
     return *this;

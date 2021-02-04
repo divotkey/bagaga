@@ -14,7 +14,7 @@ using namespace std;
 /////// VertexInputState
 /////////////////////////////////////////////////
 
-VertexInputState::VertexInputState (
+VertexInputInfo::VertexInputInfo (
     const VkPipelineVertexInputStateCreateInfo & vertexInputInfo,
     const vector<VkVertexInputBindingDescription> & bindingDescriptions, 
     const vector<VkVertexInputAttributeDescription> & attributeDescriptions)
@@ -22,10 +22,30 @@ VertexInputState::VertexInputState (
     , bindingDescriptions(bindingDescriptions)
     , attributeDescriptions(attributeDescriptions)
 {
-    this->vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
-    this->vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.empty() ? nullptr : bindingDescriptions.data();
-    this->vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-    this->vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.empty() ? nullptr : attributeDescriptions.data();
+    UpdateData();
+}
+
+VertexInputInfo::VertexInputInfo(const VertexInputInfo & o)
+    : vertexInputInfo(o.vertexInputInfo), bindingDescriptions(o.bindingDescriptions), attributeDescriptions(o.attributeDescriptions)
+{
+    UpdateData();
+}
+
+VertexInputInfo & VertexInputInfo::operator= (const VertexInputInfo & rhs)
+{
+    vertexInputInfo = rhs.vertexInputInfo;
+    bindingDescriptions = rhs.bindingDescriptions;
+    attributeDescriptions = rhs.attributeDescriptions;
+    UpdateData();
+    return *this;
+}
+
+void VertexInputInfo::UpdateData()
+{
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.empty() ? nullptr : bindingDescriptions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.empty() ? nullptr : attributeDescriptions.data();
 }
 
 /////////////////////////////////////////////////
@@ -43,7 +63,7 @@ VertexInputInfoBuilder& VertexInputInfoBuilder::AddVertexBindingDescription(VkVe
     return *this;
 }
 
-VertexInputInfoBuilder& VertexInputInfoBuilder::AddVertexAtttributeDescription(VkVertexInputAttributeDescription attributeDesc)
+VertexInputInfoBuilder& VertexInputInfoBuilder::AddVertexAttributeDescription(VkVertexInputAttributeDescription attributeDesc)
 {
     attributeDescriptions.push_back(attributeDesc);
     return *this;
@@ -57,11 +77,11 @@ VertexInputInfoBuilder & VertexInputInfoBuilder::Reset()
     return *this;
 }
 
-VertexInputState VertexInputInfoBuilder::Build() const
+VertexInputInfo VertexInputInfoBuilder::Build() const
 {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.flags = flags;
 
-    return VertexInputState(vertexInputInfo, bindingDescriptions, attributeDescriptions);
+    return VertexInputInfo(vertexInputInfo, bindingDescriptions, attributeDescriptions);
 }

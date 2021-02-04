@@ -98,7 +98,7 @@ public:
      * @param info  the vertex info object
      * @return reference to this builder used for method chaining
      */
-    GraphicsPipelineBuilder & VertexInputInfo(const VertexInputState & info);
+    GraphicsPipelineBuilder & VertexInputState(const VertexInputInfo & info);
 
     GraphicsPipelineBuilder & InputAssembly(const VkPipelineInputAssemblyStateCreateInfo & info);
     GraphicsPipelineBuilder & ViewportState(const ViewportStateInfo & viewportState);
@@ -149,7 +149,7 @@ public:
 
 private:
     /** Describes the format of the vertex data that will be passed to the vertex shader. */
-    std::optional<VertexInputState> vertexInputInfo;
+    std::optional<VertexInputInfo> vertexInputInfo;
 
     /** Describes what kind of geometry will be rendered. */
     std::optional<VkPipelineInputAssemblyStateCreateInfo> inputAssembly;

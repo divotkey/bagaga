@@ -84,7 +84,6 @@ unsigned char* Memory::Map(size_t size, size_t offset)
     return mappedData;
 }
 
-
 void Memory::Unmap()
 {
     if (!mapped) {
@@ -159,6 +158,12 @@ MemoryBuilder & MemoryBuilder::MemoryTypeIndex(uint32_t index)
 MemoryBuilder & MemoryBuilder::ChooseMemoryTypeIndex(const PhysicalDevice & device, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
     return MemoryTypeIndex(FindMemoryType(device.GetMemoryProperties(), typeFilter, properties));
+}
+
+MemoryBuilder & MemoryBuilder::ChooseTypeAndSize(const PhysicalDevice & device, const VkMemoryRequirements & memReq, VkMemoryPropertyFlags properties)
+{
+    MemoryTypeIndex(FindMemoryType(device.GetMemoryProperties(), memReq.memoryTypeBits, properties));    
+    AllocationSize(memReq.size);
     return *this;
 }
 

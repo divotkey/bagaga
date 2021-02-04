@@ -105,6 +105,8 @@ private:
     /** Used to present rendered images. */
     VkSurfaceKHR surface;
 
+    double absoluteTime;
+
 
     /**
      * Debug message callback function.

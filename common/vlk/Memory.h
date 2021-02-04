@@ -238,6 +238,10 @@ public:
         uint32_t typeFilter, 
         VkMemoryPropertyFlags properties);
 
+    MemoryBuilder & ChooseTypeAndSize(
+        const PhysicalDevice & device, 
+        const VkMemoryRequirements & memReq,
+        VkMemoryPropertyFlags properties);
 
     /**
      * Resets this builder to its initial condition.

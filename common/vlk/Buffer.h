@@ -45,6 +45,10 @@ public:
      */
     void BindMemory(std::shared_ptr<Memory> memory, size_t offset = 0);
 
+    std::shared_ptr<Memory> GetBoundedMemory() {
+        return memory;
+    }
+
     /**
      * Retrieves the memory requirements of this buffer.
      * 
@@ -132,7 +136,6 @@ public:
      * @return reference to this builder used for method chaining
      */
     BufferBuilder & SharingMode(VkSharingMode sharingMode);
-
 
     /**
      * Adds a queue family that will access this buffer.

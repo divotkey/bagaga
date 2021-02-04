@@ -17,6 +17,7 @@
 #include <SdlVideoService.h>
 #include <Vector2.h>
 #include <Vector3.h>
+#include <ITimeService.h>
 
 // Local includes
 #include "vlk/SdlVulkanLogger.h"
@@ -31,6 +32,7 @@
 #include "vlk/CommandBuffer.h"
 #include "vlk/Semaphore.h"
 #include "vlk/VertexInputInfo.h"
+#include "vlk/VertexDescription.h"
 #include "vlk/Memory.h"
 #include "vlk/Buffer.h"
 #include "vlk/InputAssembly.h"
@@ -41,7 +43,7 @@
 #include "vlk/PipelineLayout.h"
 #include "vlk/ShaderStage.h"
 #include "vlk/shd/frag.h"
-#include "vlk/shd/vert.h"
+#include "vlk/shd/vert2.h"
 #include "SdlVulkanService.h"
 
 using namespace astu;
@@ -52,7 +54,7 @@ struct Vertex {
     Vector3<float> col;
 };
 
-const std::vector<Vertex> vertices = {
+std::vector<Vertex> vertices = {
     {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
     {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
     {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
@@ -108,6 +110,8 @@ void SdlVulkanService::OnStartup()
         Cleanup();
         throw;
     }
+
+    absoluteTime = 0;
 }
 
 void SdlVulkanService::OnShutdown() 
@@ -127,6 +131,16 @@ void SdlVulkanService::OnUpdate()
 
         return;
     }
+
+    absoluteTime += ServiceManager::GetInstance().GetService<ITimeService>().GetElapsedTime();
+    vertices[0].pos.x = static_cast<float>(sin(absoluteTime) / 2);
+    vertices[1].pos.y = 0.5f + static_cast<float>(sin(absoluteTime * 0.7) * 0.35);
+    vertices[2].pos.y = 0.5f + static_cast<float>(sin(absoluteTime * 1.8) * -0.45);
+    // cout << vertices[0].col.x << endl;
+    
+    vertexBuffer->GetBoundedMemory()->WriteData(
+        reinterpret_cast<const unsigned char*>(vertices.data()), 
+        sizeof(vertices[0]) * vertices.size());
 
     logicalDevice->GetGraphicsQueue().ClearWaitSemaphores();
     logicalDevice->GetGraphicsQueue().AddWaitSemaphore(imageAvailableSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -314,8 +328,28 @@ void SdlVulkanService::CreateGraphicsPipeline()
 {
     GraphicsPipelineBuilder builder;
 
-    builder.VertexInputInfo(
+    builder.VertexInputState(
         VertexInputInfoBuilder()
+        .AddVertexBindingDescription(
+            VertexBindingDescriptionBuilder()
+                .Binding(0)
+                .Stride(sizeof(Vertex))
+                .InputRate(VK_VERTEX_INPUT_RATE_VERTEX)
+                .Build())
+        .AddVertexAttributeDescription(
+            VertexAttributeDescriptionBuilder()
+                .Location(0)
+                .Binding(0)
+                .Format(VK_FORMAT_R32G32_SFLOAT)
+                .Offset(offsetof(Vertex, pos))
+                .Build())
+        .AddVertexAttributeDescription(
+            VertexAttributeDescriptionBuilder()
+                .Location(1)
+                .Binding(0)
+                .Format(VK_FORMAT_R32G32B32_SFLOAT)
+                .Offset(offsetof(Vertex, col))
+                .Build())
         .Build());
 
     builder.InputAssembly(
@@ -428,7 +462,8 @@ void SdlVulkanService::CreateCommandBuffers()
         cmdBuf.SetRenderArea(swapChain->GetImageWidth(), swapChain->GetImageHeight(), 0, 0);
         cmdBuf.BeginRenderPass(*renderPass, *framebuffers[i]);
         cmdBuf.BindPipeline(*graphicsPipeline, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuf.Draw(3, 1, 0, 0);
+        cmdBuf.BindVertexBuffer(*vertexBuffer);
+        cmdBuf.Draw(vertices.size(), 1, 0, 0);
         cmdBuf.EndRenderPass();
         cmdBuf.End();
     }
@@ -488,9 +523,31 @@ int SdlVulkanService::RatePhysicalDevice(const PhysicalDevice & device) const
 
 void SdlVulkanService::CreateVertexBuffer()
 {
+    vertexBuffer = BufferBuilder()
+        .Size(sizeof(vertices[0]) * vertices.size())
+        .Usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+        .SharingMode(VK_SHARING_MODE_EXCLUSIVE)
+        // not required because exclusive mode
+        .AddQueueFamily(logicalDevice->GetGraphicsQueueIndex())
+        .Build(logicalDevice);
 
+    const auto memRequirements = vertexBuffer->GetMemoryRequirements();
+
+    std::shared_ptr<Memory> memory = MemoryBuilder()
+        .AllocationSize(memRequirements.size)
+        .ChooseMemoryTypeIndex(
+            *physicalDevice, 
+            memRequirements.memoryTypeBits, 
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 
+            | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+        .Build(logicalDevice);
+
+    vertexBuffer->BindMemory(memory);
+
+    memory->WriteData(
+        reinterpret_cast<const unsigned char*>(vertices.data()), 
+        sizeof(vertices[0]) * vertices.size());
 }
-
 
 /////////////////////////////////////////////////
 /////// Proxy functions
