@@ -44,10 +44,10 @@ public:
      * @parma x2    the x-coodrinate of the second point of the line
      * @parma y2    the y-coodrinate of the second point of the line
      */
-    virtual void DrawLine(double x1, double y1, double x2, double X2) = 0;
+    virtual void DrawLine(double x1, double y1, double x2, double y2) = 0;
 
     /**
-     * Sets the current drawing color used for all subsequent drawing calles.
+     * Sets the current drawing color used for all subsequent drawing calls.
      * 
      * @param c the new drawing color 
      */

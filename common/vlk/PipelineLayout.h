@@ -62,7 +62,6 @@ private:
      */
     PipelineLayout(VkPipelineLayout handle, std::shared_ptr<LogicalDevice> device);
 
-
     friend class PipelineLayoutBuilder;
 };
 

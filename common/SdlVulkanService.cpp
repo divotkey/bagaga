@@ -12,7 +12,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 
-// Astu includes
+// AST Utilities includes
 #include <VersionInfo.h>
 #include <SdlVideoService.h>
 #include <Vector2.h>
@@ -44,6 +44,7 @@
 #include "vlk/ShaderStage.h"
 #include "vlk/shd/frag.h"
 #include "vlk/shd/vert2.h"
+#include "vlk/IVulkanRenderLayer.h"
 #include "SdlVulkanService.h"
 
 using namespace astu;
@@ -103,7 +104,7 @@ void SdlVulkanService::OnStartup()
         CreateRenderPass();
         CreateGraphicsPipeline();
         CreateFramebuffers();
-        CreateVertexBuffer();
+        // CreateVertexBuffer();
         CreateCommandBuffers();
         CreateSemaphores();
     } catch (...) {
@@ -122,32 +123,45 @@ void SdlVulkanService::OnShutdown()
 
 void SdlVulkanService::OnUpdate() 
 {
-        // std::optional<uint32_t> AcquireNextImage(VkSemaphore semaphore = VK_NULL_HANDLE, uint64_t timeout = UINT64_MAX);
-
     auto imageIndex = swapChain->AcquireNextImage(*imageAvailableSemaphore);
     if(!imageIndex.has_value()) {
         SDL_LogInfo(SDL_LOG_CATEGORY_VIDEO, 
-            "Aquire next image from swap chain failed");
+            "Acquire next image from swap chain failed");
 
         return;
     }
 
-    absoluteTime += ServiceManager::GetInstance().GetService<ITimeService>().GetElapsedTime();
-    vertices[0].pos.x = static_cast<float>(sin(absoluteTime) / 2);
-    vertices[1].pos.y = 0.5f + static_cast<float>(sin(absoluteTime * 0.7) * 0.35);
-    vertices[2].pos.y = 0.5f + static_cast<float>(sin(absoluteTime * 1.8) * -0.45);
-    // cout << vertices[0].col.x << endl;
+    /////// Start Test/Debug code ///////
+    // absoluteTime += ServiceManager::GetInstance().GetService<ITimeService>().GetElapsedTime();
+    // vertices[0].pos.x = static_cast<float>(sin(absoluteTime) / 2);
+    // vertices[1].pos.y = 0.5f + static_cast<float>(sin(absoluteTime * 0.7) * 0.35);
+    // vertices[2].pos.y = 0.5f + static_cast<float>(sin(absoluteTime * 1.8) * -0.45);
+    // // cout << vertices[0].col.x << endl;
     
-    vertexBuffer->GetBoundedMemory()->WriteData(
-        reinterpret_cast<const unsigned char*>(vertices.data()), 
-        sizeof(vertices[0]) * vertices.size());
+    // vertexBuffer->GetMemory()->WriteData(
+    //     reinterpret_cast<const unsigned char*>(vertices.data()), 
+    //     sizeof(vertices[0]) * vertices.size());
+    /////// End of  Test/Debug code ///////
 
     logicalDevice->GetGraphicsQueue().ClearWaitSemaphores();
     logicalDevice->GetGraphicsQueue().AddWaitSemaphore(imageAvailableSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
     logicalDevice->GetGraphicsQueue().ClearSignalSemaphores();
     logicalDevice->GetGraphicsQueue().AddSignalSemaphore(renderFinishedSemaphore);
-    logicalDevice->GetGraphicsQueue().SubmitCommandBuffer(*commandBuffers.at(imageIndex.value()));
 
+    auto & cmdBuf = *commandBuffers.at(imageIndex.value());
+    cmdBuf.Reset();
+    cmdBuf.Begin();
+    cmdBuf.SetRenderArea(swapChain->GetImageWidth(), swapChain->GetImageHeight(), 0, 0);
+    cmdBuf.BeginRenderPass(*renderPass, *framebuffers.at(imageIndex.value()));
+
+    for (const auto & layer : renderLayers) {
+        layer->Render(cmdBuf);
+    }
+
+    cmdBuf.EndRenderPass();
+    cmdBuf.End();
+
+    logicalDevice->GetGraphicsQueue().SubmitCommandBuffer(cmdBuf);
 
     logicalDevice->GetPresentQueue().WaitIdle();
     logicalDevice->GetPresentQueue().ClearWaitSemaphores();
@@ -284,7 +298,10 @@ void SdlVulkanService::CreateSwapChain()
     SDL_Vulkan_GetDrawableSize(sdlWindow, &width, &height);
 
     SwapChainBuilder builder;
-    builder.ChooseConfiguration(*physicalDevice, surface, width, height);
+    builder
+        .ChooseConfiguration(*physicalDevice, surface, width, height)
+        .PresentMode(VK_PRESENT_MODE_IMMEDIATE_KHR)
+        ;
 
     swapChain = builder.Build(logicalDevice, surface);
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created swap chain");
@@ -406,7 +423,7 @@ void SdlVulkanService::CreateGraphicsPipeline()
         PipelineLayoutBuilder()
         .Build(logicalDevice));
 
-    builder.RenderPass(*renderPass, 0);
+    builder.RenderPass(*renderPass).Subpass(0);
 
     builder.AddShaderStage(
         ShaderStageBuilder()
@@ -449,6 +466,7 @@ void SdlVulkanService::CreateCommandBuffers()
 {
     commandPool = CommandPoolBuilder()
         .QueueFamilyIndex(logicalDevice->GetGraphicsQueueIndex())
+        .Flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
         .Build(logicalDevice);
 
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created command pool");
@@ -456,19 +474,19 @@ void SdlVulkanService::CreateCommandBuffers()
     commandBuffers = commandPool->CreateCommandBuffers(framebuffers.size());
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created command buffers");
 
-    for (size_t i = 0; i < framebuffers.size(); ++i) {
-        auto & cmdBuf = *commandBuffers[i];
-        cmdBuf.Begin();
-        cmdBuf.SetRenderArea(swapChain->GetImageWidth(), swapChain->GetImageHeight(), 0, 0);
-        cmdBuf.BeginRenderPass(*renderPass, *framebuffers[i]);
-        cmdBuf.BindPipeline(*graphicsPipeline, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuf.BindVertexBuffer(*vertexBuffer);
-        cmdBuf.Draw(vertices.size(), 1, 0, 0);
-        cmdBuf.EndRenderPass();
-        cmdBuf.End();
-    }
+    // for (size_t i = 0; i < framebuffers.size(); ++i) {
+    //     auto & cmdBuf = *commandBuffers[i];
+    //     cmdBuf.Begin();
+    //     cmdBuf.SetRenderArea(swapChain->GetImageWidth(), swapChain->GetImageHeight(), 0, 0);
+    //     cmdBuf.BeginRenderPass(*renderPass, *framebuffers[i]);
+    //     cmdBuf.BindPipeline(*graphicsPipeline, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    //     cmdBuf.BindVertexBuffer(*vertexBuffer);
+    //     cmdBuf.Draw(vertices.size(), 1, 0, 0);
+    //     cmdBuf.EndRenderPass();
+    //     cmdBuf.End();
+    // }
 
-    SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully recorded command buffers");
+    // SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully recorded command buffers");
 }
 
 void SdlVulkanService::CreateSemaphores()
@@ -581,4 +599,72 @@ VkResult SdlVulkanService::CreateDebugUtilsMessengerEXT(
     }
 
     return func(*instance, pCreateInfo, nullptr, pDebugMessenger);
+}
+
+/////////////////////////////////////////////////
+/////// Interface IVulkanRenderSystem
+/////////////////////////////////////////////////
+
+void SdlVulkanService::AddRenderLayer(std::shared_ptr<IVulkanRenderLayer> layer)
+{
+    if (HasRenderLayer(layer)) {
+        throw logic_error("Vulkan render layer already added");
+    }
+
+    renderLayers.push_back(layer);
+}
+
+bool SdlVulkanService::HasRenderLayer(std::shared_ptr<IVulkanRenderLayer> layer)
+{
+    return find(renderLayers.begin(), renderLayers.end(), layer) != renderLayers.end();
+}
+
+void SdlVulkanService::RemoveRenderLayer(std::shared_ptr<IVulkanRenderLayer> layer)
+{
+    renderLayers.erase(remove(renderLayers.begin(), renderLayers.end(), layer), renderLayers.end());
+}
+
+const SwapChain & SdlVulkanService::GetSwapChain() const
+{
+    if (!IsRunning()) {
+        throw std::logic_error("Unable to access swap chain, service not running");
+    }
+
+    return *swapChain;
+}
+
+const RenderPass & SdlVulkanService::GetRenderPass() const 
+{
+    if (!IsRunning()) {
+        throw std::logic_error("Unable to access render pass, service not running");
+    }
+
+    return *renderPass;
+}
+
+const PhysicalDevice & SdlVulkanService::GetPhysicalDevice() const
+{
+    if (!IsRunning()) {
+        throw std::logic_error("Unable to access render pass, service not running");
+    }
+
+    return *physicalDevice;
+}
+
+std::shared_ptr<const LogicalDevice> SdlVulkanService::GetLogicalDevice() const
+{
+    if (!IsRunning()) {
+        throw std::logic_error("Unable to access logical device, service not running");
+    }
+
+    return logicalDevice;
+}
+
+std::shared_ptr<LogicalDevice> SdlVulkanService::GetLogicalDevice()
+{
+    if (!IsRunning()) {
+        throw std::logic_error("Unable to access logical device, service not running");
+    }
+
+    return logicalDevice;
 }

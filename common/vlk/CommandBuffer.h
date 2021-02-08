@@ -97,6 +97,18 @@ public:
     }
 
     /**
+     * Resets this command buffer to its initial state
+     * 
+     * The release resources flag specifies that most or all memory resources
+     * currently owned by the command buffer should be returned to the parent
+     * command pool. If this flag is not set, then the command buffer may
+     * hold onto memory resources and reuse them when recording commands.
+     * 
+     * @param releaseResources  specifies not to reuse resources 
+     */
+    void Reset(bool releaseResources = false);
+
+    /**
      * Records a command to begin a new render pass.
      * 
      * @param renderPass    handle to the render pass object
@@ -151,7 +163,6 @@ public:
      * @param buffers   the buffer objects containing vertex data
      */
     void BindVertexBuffers(const std::vector<std::shared_ptr<Buffer>> & buffers);
-
 
     /**
      * Records a non-indexed draw.

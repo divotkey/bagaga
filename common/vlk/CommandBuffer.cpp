@@ -31,6 +31,14 @@ CommandBuffer::~CommandBuffer()
 
 }
 
+void CommandBuffer::Reset(bool releaseResources)
+{
+    VkResult res = vkResetCommandBuffer(commandBuffer, releaseResources ? VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT : 0);
+    if (res != VK_SUCCESS) {
+        throw std::runtime_error("Failed to reset command buffer, error " + to_string(res));
+    }
+}
+
 void CommandBuffer::Begin()
 {
     VkCommandBufferBeginInfo beginInfo{};

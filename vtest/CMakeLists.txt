@@ -41,8 +41,11 @@ add_executable(VulkanTest
         ../common/vlk/Semaphore.cpp
         ../common/vlk/Queue.cpp
         ../common/vlk/SdlVulkanLogger.cpp
+        ../common/vlk/BaseVulkanRenderLayer.cpp
         ../common/SdlVulkanService.cpp
+        ../common/VulkanLineRenderer.cpp
         main.cpp 
+        ../demo/LineRendererTestService.cpp
         )
 
 #add include files of commons directory

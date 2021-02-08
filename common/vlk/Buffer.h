@@ -45,7 +45,12 @@ public:
      */
     void BindMemory(std::shared_ptr<Memory> memory, size_t offset = 0);
 
-    std::shared_ptr<Memory> GetBoundedMemory() {
+    /**
+     * Return the memory object bound to this buffer.
+     * 
+     * @param the memory object or nullptr if no memory has been bound to this buffer
+     */
+    std::shared_ptr<Memory> GetMemory() {
         return memory;
     }
 

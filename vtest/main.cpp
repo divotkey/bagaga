@@ -27,9 +27,11 @@
 #include <Events.h>
 
 // Bagaga Commons
+#include "VulkanLineRenderer.h"
 #include "SdlVulkanService.h"
 
 // Applications specific
+#include "../demo/LineRendererTestService.h"
 
 using namespace std;
 using namespace astu;
@@ -53,8 +55,10 @@ void AddCoreServices()
 	sm.AddService(std::make_shared<SdlService>(true, true));
 	sm.AddService(std::make_shared<SdlVideoService>());
 	sm.AddService(std::make_shared<SdlVulkanService>(true));
+	sm.AddService(std::make_shared<VulkanLineRenderer>());
 	sm.AddService(std::make_shared<SdlEventService>());
 	sm.AddService(std::make_shared<SdlTimeService>());
+	sm.AddService(std::make_shared<LineRendererTestService>());
 	
 	// Experimental event-based input handling.
 	sm.AddService(std::make_shared<MouseButtonEventService>());
@@ -101,7 +105,7 @@ int main()
 
 	// configure application
 	sm.GetService<IWindowManager>().SetTitle(kAppName + " - Version " + kAppVersion);
-	sm.GetService<IWindowManager>().SetSize(800, 600);
+	sm.GetService<IWindowManager>().SetSize(1366, 768);
 	sm.GetService<SdlVideoService>().EnableVulkanSupport(true);
 
 	// Start services
@@ -111,9 +115,24 @@ int main()
 	auto &updater = sm.GetService<UpdateService>();
 	auto &event = sm.GetService<SdlEventService>();
 
+
+	auto & wndMngr = sm.GetService<IWindowManager>();
+
+	int cntFrames = 0;
+	double sum;
 	while (!event.IsQuit())
 	{
+		StartTimer();
 		updater.UpdateAll();
+		StopTimer();
+		if (++cntFrames >= 100) {
+			sum /= cntFrames;
+			wndMngr.SetTitle(kAppName + " - Version " + kAppVersion + " (FPS " + to_string(RoundToInt(1000000 / sum)) + ")");
+			cntFrames = 0;
+			sum = 0;
+		} else {
+			sum += GetMicroseconds();
+		}
 	}
 
 	// Game loop has ended, shutdown services.

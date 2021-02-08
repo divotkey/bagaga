@@ -19,7 +19,7 @@
 
 #define MAX_VEL     550.0
 #define MIN_VEL     150.0
-#define NUM_LINES   15
+#define NUM_LINES   500
 
 LineRendererTestService::LineRendererTestService(bool _drawStatic)
     : drawStatic(_drawStatic)
