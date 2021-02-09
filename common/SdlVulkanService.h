@@ -57,6 +57,7 @@ public:
     virtual void RemoveRenderLayer(std::shared_ptr<IVulkanRenderLayer> layer) override;
     virtual const SwapChain & GetSwapChain() const override;
     virtual const RenderPass & GetRenderPass() const override;
+    virtual const GraphicsPipeline & GetBaseGraphicsPipeline() const override;
     virtual const PhysicalDevice & GetPhysicalDevice() const override;
     virtual std::shared_ptr<const LogicalDevice> GetLogicalDevice() const override;    
     virtual std::shared_ptr<LogicalDevice> GetLogicalDevice() override;    

@@ -83,6 +83,9 @@ private:
 
 /**
  * Utility class used to build graphics pipeline objects.
+ * 
+ * Note: The Vulkan API offers the option to create multiple pipelines at once, which 
+ * is currently not supported by this builder utility class.
  */
 class GraphicsPipelineBuilder {
 public:
@@ -91,6 +94,15 @@ public:
      * Constructor.
      */
     GraphicsPipelineBuilder();
+
+
+    /**
+     * Specifies how the pipeline will be generated.
+     * 
+     * @param flags the flags to be used to create the pipeline
+     * @return reference to this builder used for method chaining
+     */
+    GraphicsPipelineBuilder & Flags(VkPipelineCreateFlags flags);
 
     /**
      * Specifies the format of the vertex data that will be passed to the vertex shader.
@@ -120,14 +132,13 @@ public:
         return *this;
     }
 
-    GraphicsPipelineBuilder & BasePipeline(VkPipeline basePipeline);
-    GraphicsPipelineBuilder & BasePipelineIndex(int32_t index);
 
-    GraphicsPipelineBuilder & BasePipeline(VkPipeline basePipeline, int32_t index) {
-        BasePipeline(basePipeline);
-        BasePipelineIndex(index);
-        return *this;
-    }
+    /**
+     * The pipeline to derive from.
+     * 
+     * @param basePipeline  the handle to the base graphics pipeline
+     */        
+    GraphicsPipelineBuilder & BasePipeline(VkPipeline basePipeline);
     
     GraphicsPipelineBuilder & AddShaderStage(const ShaderStageInfo & stage);
 
@@ -148,6 +159,9 @@ public:
     std::unique_ptr<GraphicsPipeline> Build(std::shared_ptr<LogicalDevice> device) const;
 
 private:
+    /** Specifies how the pipeline will be generated. */
+    VkPipelineCreateFlags flags;
+
     /** Describes the format of the vertex data that will be passed to the vertex shader. */
     std::optional<VertexInputInfo> vertexInputInfo;
 
@@ -183,9 +197,6 @@ private:
 
     /** The pipeline to derive from. */
     VkPipeline basePipeline;
-
-    /** Index into the pCreateInfos parameter to use as a pipeline to derive from. */
-    int32_t basePipelineIndex;
 
     /** The shader stages of the pipeline to create. */
     std::vector<ShaderStageInfo> shaderStages;

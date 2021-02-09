@@ -445,6 +445,8 @@ void SdlVulkanService::CreateGraphicsPipeline()
             .Build(logicalDevice))
         .Build());
 
+    builder.Flags(VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT);
+
     graphicsPipeline = builder.Build(logicalDevice);
     SDL_LogVerbose(SDL_LOG_CATEGORY_VIDEO, "Successfully created graphics pipeline object");
 }
@@ -640,6 +642,15 @@ const RenderPass & SdlVulkanService::GetRenderPass() const
     }
 
     return *renderPass;
+}
+
+const GraphicsPipeline & SdlVulkanService::GetBaseGraphicsPipeline() const
+{
+    if (!IsRunning()) {
+        throw std::logic_error("Unable to access graphics pipeline, service not running");
+    }
+
+    return *graphicsPipeline;
 }
 
 const PhysicalDevice & SdlVulkanService::GetPhysicalDevice() const

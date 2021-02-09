@@ -11,6 +11,7 @@ class IVulkanRenderLayer;
 class SwapChain;
 class PhysicalDevice;
 class LogicalDevice;
+class GraphicsPipeline;
 class RenderPass;
 
 /** 
@@ -47,6 +48,13 @@ public:
      * @return the physical device
      */
     virtual const PhysicalDevice & GetPhysicalDevice() const = 0;
+
+    /**
+     * Returns the base graphics pipeline to be used to create derived pipelines.
+     * 
+     * @return the base graphics pipeline
+     */
+    virtual const GraphicsPipeline & GetBaseGraphicsPipeline() const = 0;
 
     /**
      * Returns the logical device used by this render system.

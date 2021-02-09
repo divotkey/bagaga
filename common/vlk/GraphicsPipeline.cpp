@@ -39,22 +39,9 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder()
     Reset();
 }
 
-GraphicsPipelineBuilder & GraphicsPipelineBuilder::Reset()
-{   
-    vertexInputInfo.reset();
-    inputAssembly.reset();
-    viewportState.reset();
-    rasterizer.reset();
-    multisampling.reset();
-    depthStencil.reset();
-    colorBlending.reset();
-    dynamicState.reset();
-    pipelineLayout = nullptr;
-    renderPass = VK_NULL_HANDLE;
-    subpass = 0;
-    basePipeline = VK_NULL_HANDLE;
-    basePipelineIndex = -1;
-    shaderStages.clear();
+GraphicsPipelineBuilder & GraphicsPipelineBuilder::Flags(VkPipelineCreateFlags flags)
+{
+    this->flags = flags;
     return *this;
 }
 
@@ -130,15 +117,28 @@ GraphicsPipelineBuilder & GraphicsPipelineBuilder::BasePipeline(VkPipeline baseP
     return *this;
 }
 
-GraphicsPipelineBuilder & GraphicsPipelineBuilder::BasePipelineIndex(int32_t index)
-{
-    basePipelineIndex = index;
-    return *this;
-}
-
 GraphicsPipelineBuilder & GraphicsPipelineBuilder::AddShaderStage(const ShaderStageInfo & stage)
 {
     shaderStages.push_back(stage);
+    return *this;
+}
+
+GraphicsPipelineBuilder & GraphicsPipelineBuilder::Reset()
+{   
+    flags = 0;
+    vertexInputInfo.reset();
+    inputAssembly.reset();
+    viewportState.reset();
+    rasterizer.reset();
+    multisampling.reset();
+    depthStencil.reset();
+    colorBlending.reset();
+    dynamicState.reset();
+    pipelineLayout = nullptr;
+    renderPass = VK_NULL_HANDLE;
+    subpass = 0;
+    basePipeline = VK_NULL_HANDLE;
+    shaderStages.clear();
     return *this;
 }
 
@@ -148,6 +148,7 @@ unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(shared_ptr<LogicalDe
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.flags = flags;
     pipelineInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
 
     vector<VkPipelineShaderStageCreateInfo> stages;
@@ -158,11 +159,11 @@ unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(shared_ptr<LogicalDe
 
     pipelineInfo.pVertexInputState = &vertexInputInfo.value().GetInfo();
     pipelineInfo.pInputAssemblyState = &inputAssembly.value();
-    pipelineInfo.pViewportState = viewportState.value();
-    pipelineInfo.pRasterizationState = &rasterizer.value();
-    pipelineInfo.pMultisampleState = &multisampling.value();
+    pipelineInfo.pViewportState = viewportState.has_value() ? &viewportState.value().GetInfo() : nullptr;
+    pipelineInfo.pRasterizationState = rasterizer.has_value() ? &rasterizer.value() : nullptr;
+    pipelineInfo.pMultisampleState = multisampling.has_value() ? &multisampling.value() : nullptr;
     pipelineInfo.pDepthStencilState = depthStencil.has_value() ? &depthStencil.value() : nullptr;
-    pipelineInfo.pColorBlendState = colorBlending.value();
+    pipelineInfo.pColorBlendState = colorBlending.has_value() ? &colorBlending.value().GetInfo() : nullptr;
     pipelineInfo.pDynamicState = dynamicState.has_value() ? &dynamicState.value() : nullptr;
 
     pipelineInfo.layout = *pipelineLayout;
@@ -170,7 +171,7 @@ unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(shared_ptr<LogicalDe
     pipelineInfo.subpass = subpass;
 
     pipelineInfo.basePipelineHandle = basePipeline;
-    pipelineInfo.basePipelineIndex = basePipelineIndex;
+    pipelineInfo.basePipelineIndex = -1;
 
 
     VkPipeline handle;
@@ -191,6 +192,10 @@ unique_ptr<GraphicsPipeline> GraphicsPipelineBuilder::Build(shared_ptr<LogicalDe
 
 void GraphicsPipelineBuilder::ValidateConfiguration() const
 {
+    if ((basePipeline != VK_NULL_HANDLE) && !(flags & VK_PIPELINE_CREATE_DERIVATIVE_BIT)) {
+        throw logic_error("Unable to build graphics derived pipeline, VK_PIPELINE_CREATE_DERIVATIVE_BIT not set");
+    }
+
     if (!vertexInputInfo.has_value()) {
         throw logic_error("Unable to build graphics pipeline, vertex input info not specified");
     }
@@ -220,7 +225,7 @@ void GraphicsPipelineBuilder::ValidateConfiguration() const
         throw logic_error("Unable to build graphics pipeline, pipeline layout not specified");
     }
 
-    if (renderPass == VK_NULL_HANDLE) {
+    if ((basePipeline == VK_NULL_HANDLE) && (renderPass == VK_NULL_HANDLE)) {
         throw logic_error("Unable to build graphics pipeline, render pass not specified");
     }
 

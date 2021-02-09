@@ -178,6 +178,10 @@ void VulkanLineRenderer::CreateGraphicsPipeline(IVulkanRenderSystem & renderSys)
             .Build(renderSys.GetLogicalDevice()))
         .Build());
 
+    builder
+        .BasePipeline(renderSys.GetBaseGraphicsPipeline())
+        .Flags(VK_PIPELINE_CREATE_DERIVATIVE_BIT);
+
     graphicsPipeline = builder.Build(renderSys.GetLogicalDevice());
 }
 
