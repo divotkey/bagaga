@@ -95,7 +95,6 @@ public:
      */
     GraphicsPipelineBuilder();
 
-
     /**
      * Specifies how the pipeline will be generated.
      * 
@@ -103,6 +102,14 @@ public:
      * @return reference to this builder used for method chaining
      */
     GraphicsPipelineBuilder & Flags(VkPipelineCreateFlags flags);
+
+    /**
+     * Adds flags to specify how the pipeline will be generated.
+     * 
+     * @param flags the flags to add
+     * @return reference to this builder used for method chaining
+     */
+    GraphicsPipelineBuilder & AddFlags(VkPipelineCreateFlags flags);
 
     /**
      * Specifies the format of the vertex data that will be passed to the vertex shader.

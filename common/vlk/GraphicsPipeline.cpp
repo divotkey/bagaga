@@ -45,6 +45,12 @@ GraphicsPipelineBuilder & GraphicsPipelineBuilder::Flags(VkPipelineCreateFlags f
     return *this;
 }
 
+GraphicsPipelineBuilder & GraphicsPipelineBuilder::AddFlags(VkPipelineCreateFlags flags)
+{
+    this->flags |= flags;
+    return *this;
+}
+
 GraphicsPipelineBuilder & GraphicsPipelineBuilder::VertexInputState(const VertexInputInfo & info)
 {
     vertexInputInfo = info;
