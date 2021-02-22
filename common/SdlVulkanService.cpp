@@ -49,7 +49,6 @@
 
 using namespace astu;
 
-
 struct Vertex {
     Vector2<float> pos;
     Vector3<float> col;
@@ -610,7 +609,7 @@ VkResult SdlVulkanService::CreateDebugUtilsMessengerEXT(
 void SdlVulkanService::AddRenderLayer(std::shared_ptr<IVulkanRenderLayer> layer)
 {
     if (HasRenderLayer(layer)) {
-        throw logic_error("Vulkan render layer already added");
+        throw std::logic_error("Vulkan render layer already added");
     }
 
     renderLayers.push_back(layer);

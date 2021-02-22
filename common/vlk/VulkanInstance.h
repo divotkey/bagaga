@@ -14,8 +14,6 @@
 // Local includes
 #include "vlk/NameList.h"
 
-using namespace std;
-
 /**
  * Wraps a Vulkan instance.
  */
@@ -27,12 +25,12 @@ public:
      * 
      * @param string represening the API version
      */
-    static string GetVersion();
+    static std::string GetVersion();
 
     /**
      * Returns the names of available Vulkan instance layers.
      */
-    static vector<string> GetAvailableLayers();
+    static std::vector<std::string> GetAvailableLayers();
 
     /**
      * Tests wheter certain instance layers are available.
@@ -40,7 +38,7 @@ public:
      * @param layers    the required layers
      * @return `true` if the layers are available, `false` otherwise
      */
-    static bool CheckLayers(const vector<string> & layers);
+    static bool CheckLayers(const std::vector<std::string> & layers);
 
     /**
      * Tests wheter certain instance layers are available.
@@ -48,12 +46,12 @@ public:
      * @param layers    the required layers
      * @return `true` if the layers are available, `false` otherwise
      */
-    static bool CheckLayers(const vector<const char*> & layers);
+    static bool CheckLayers(const std::vector<const char*> & layers);
 
     /**
      * Returns the names of available Vulkan instance extensions.
      */
-    static vector<string> GetAvailableExtensions();
+    static std::vector<std::string> GetAvailableExtensions();
 
 
     /**
@@ -122,7 +120,7 @@ public:
      * @return reference to this builder for method chaining
      * @throws logic_error in case the extension has already been added
      */
-    VulkanInstanceBuilder & AddExtension(const string & extensionName);
+    VulkanInstanceBuilder & AddExtension(const std::string & extensionName);
 
     /**
      * Adds serveral extensions at once.
@@ -131,7 +129,7 @@ public:
      * @return reference to this builder for method chaining
      * @throws logic_error in case the extension has already been added
      */
-    VulkanInstanceBuilder & AddExtensions(const vector<string> & extensionNames);
+    VulkanInstanceBuilder & AddExtensions(const std::vector<std::string> & extensionNames);
 
     /**
      * Adds serveral extensions at once.
@@ -140,7 +138,7 @@ public:
      * @return reference to this builder for method chaining
      * @throws logic_error in case the extension has already been added
      */
-    VulkanInstanceBuilder & AddExtensions(const vector<const char *> & extensionNames);
+    VulkanInstanceBuilder & AddExtensions(const std::vector<const char *> & extensionNames);
 
     /**
      * Tests whether the extenions has already been added.
@@ -148,7 +146,7 @@ public:
      * @param extensionName the name of the extenions to test
      * @return `true` in case the extension has already been added
      */
-    bool HasExtension(const string & extensionName) const noexcept;
+    bool HasExtension(const std::string & extensionName) const noexcept;
 
     /**
      * Adds a layer.
@@ -156,7 +154,7 @@ public:
      * @return reference to this builder for method chaining
      * @throws logic_error in case the layer has already been added
      */
-    VulkanInstanceBuilder & AddLayer(const string & layerName);
+    VulkanInstanceBuilder & AddLayer(const std::string & layerName);
 
     /**
      * Adds serveral layers at once.
@@ -165,7 +163,7 @@ public:
      * @return reference to this builder for method chaining
      * @throws logic_error in case the extension has already been added
      */
-    VulkanInstanceBuilder & AddLayers(const vector<string> & layerNames);
+    VulkanInstanceBuilder & AddLayers(const std::vector<std::string> & layerNames);
 
     /**
      * Adds serveral layers at once.
@@ -174,7 +172,7 @@ public:
      * @return reference to this builder for method chaining
      * @throws logic_error in case the extension has already been added
      */
-    VulkanInstanceBuilder & AddLayers(const vector<const char *> & layerNames);
+    VulkanInstanceBuilder & AddLayers(const std::vector<const char *> & layerNames);
 
     /**
      * Tests whether the layer has already been added.
@@ -182,7 +180,7 @@ public:
      * @param extensionName the name of the layer to test
      * @return `true` in case the layer has already been added
      */
-    bool HasLayer(const string & layerName) const noexcept;
+    bool HasLayer(const std::string & layerName) const noexcept;
 
 
     /**
@@ -197,7 +195,7 @@ public:
      * 
      * @return the Vulkan instance
      */
-    unique_ptr<VulkanInstance> Build();
+    std::unique_ptr<VulkanInstance> Build();
 
 private:
 
